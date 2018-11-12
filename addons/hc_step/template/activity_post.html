@@ -1,0 +1,101 @@
+{template 'common/header'}
+<style>
+	.dag,.dagtwo,.dagthree,.dagfor{
+		display:none;
+	}
+</style>
+<ul class="nav nav-tabs">
+
+	<li><a href="{php echo $this->createWebUrl('activity')}">活动</a></li>
+
+	<li class="active"><a href="{php echo $this->createWebUrl('activity_post')}">添加活动</a></li>
+
+	<li><a href="{php echo $this->createWebUrl('activityset')}">基础设置</a></li>
+
+</ul>
+
+
+
+<div class="clearfix">
+
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit="return formcheck()">
+
+		<input type="hidden" name="id" value="{$info['id']}">
+
+		<div class="panel panel-default">
+
+			<div class="panel-heading">
+
+				活动设置
+
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="displayorder" class="form-control" value="{$info['displayorder']}">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-6 col-sm-3 col-md-2 col-lg-2 control-label">达标步数</label>
+					<div class="col-sm-8">
+						<div class="input-group">
+						<input type="text" name="step" class="form-control" value="{$info['step']}">
+						<div class='input-group-addon'>步</div>
+						</div>
+						<div style="color: red !important;">例:3000</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-6 col-sm-3 col-md-2 col-lg-2 control-label">报名费</label>
+					<div class="col-sm-8">
+						<div class="input-group">
+						<input type="text" name="entryfee" class="form-control" value="{$info['entryfee']}">
+						<div class='input-group-addon'>步数币</div>
+						</div>
+						<div style="color: red !important;">例:20</div>
+					</div>
+				</div>
+				<!-- <div class="form-group">
+					<label class="col-xs-6 col-sm-3 col-md-2 control-label">开始时间</label>
+					<div class="col-sm-9 col-xs-12">
+						 {php echo tpl_form_field_date('starttime',$info['starttime'], $withtime = false);}
+						 <div style="color: red !important;">例如选择2018-8-2。则2018年8月1日即可开始报名，活动从2018年8月2日0点生效。</div>
+					</div>					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-6 col-sm-3 col-md-2 control-label">结束时间</label>
+					<div class="col-sm-9 col-xs-12">
+						 {php echo tpl_form_field_date('endtime',$info['endtime'], $withtime = false);}
+						 <div style="color: red !important;">例如选择2018-8-31。则2018年8月31日截止报名，活动从2018年8月31日24点截止。2018年9月1日结算8月31日的奖励</div>
+					</div>					
+				</div>
+				<div class="form-group" style="">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">规则说明</label>
+					<div class="col-sm-9 col-xs-12">
+						<textarea class="form-control" name="rule" id="advname" class="form-control" value="{$info['rule']}">{$info['rule']}</textarea>
+					</div>
+				</div> -->
+			</div>
+		</div>
+		<div class="form-group col-sm-12">
+
+			<input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1">
+
+			{if empty($info['id'])}
+
+				<input type="hidden" name="act" value="add">
+
+			{else}
+
+				<input type="hidden" name="act" value="edit">
+
+			{/if}
+
+		</div>
+
+	</form>
+
+</div>
+
+{template 'common/footer'}

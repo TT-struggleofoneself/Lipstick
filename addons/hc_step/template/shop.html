@@ -1,0 +1,63 @@
+{template 'common/header'}
+
+
+
+<div class="clearfix">				
+
+<ul class="nav nav-tabs">
+
+	<li class="active"><a href="{php echo $this->createWebUrl('shop')}">门店列表</a></li>
+
+	<li><a href="{php echo $this->createWebUrl('shop_post')}">添加门店</a></li>
+
+	<li><a href="{php echo $this->createWebUrl('hexiaolog')}">核销记录</a></li>
+
+</ul>
+
+<div class="main panel panel-default">
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+					<th style="width:10%;">logo</th>
+					<th style="width:10%;">门店名称</th>					
+					<th style="width:20%;">地址</th>
+					<th style="width:10%;">营业时间</th>
+					<th style="width:10%;">联系电话</th>
+					<th style="width:10%;">店员昵称</th>
+					<th style="width:10%;">店员uid</th>
+					<th style="width:10%;">头像</th>
+					<th class="text-right" style="width:10%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $index $item}
+					<tr>
+						<td><img class="scrollLoading" src="{media $item['logo']}" data-url="{media $item['logo']}" onerror="this.src='/web/resource/images/nopic-small.jpg'" height="50" width="50"></td>
+						<td>{$item['shopname']}</td>
+						<td>{$item['sheng']}{$item['shi']}{$item['qu']}{$item['address']}</td>
+						<td>{$item['starttime']}--{$item['endtime']}</td>
+						<td>{$item['tel']}</td>
+						<td>{$item['nick_name']}</td>
+						<td>{$item['user_id']}</td>
+						<td><img class="scrollLoading" src="{media $item['head_pic']}" data-url="{media $item['head_pic']}" onerror="this.src='/web/resource/images/nopic-small.jpg'" height="50" width="50"></td>
+						<td class="text-right">
+							<a href="{php echo $this->createWebUrl('shop_post',array('id'=>$item['id']))}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="修改"><i class="fa fa-edit"></i></a>
+							<a href="{php echo $this->createWebUrl('shop_post',array('act'=>'del','id'=>$item['id']))}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="删除"><i class="fa fa-times"></i></a>
+						</td>
+					</tr>
+				{/loop}
+				{if empty($list) }
+                <tr ng-if="!wechats">
+                <td colspan="9" class="text-center">暂无数据</td>
+                </tr>
+                {/if}
+				<tr>
+					<td colspan="9" style="text-align:right">{$page}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+</div>
+{template 'common/footer'}

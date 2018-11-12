@@ -1,0 +1,60 @@
+{template 'common/header'}
+<ul class="nav nav-tabs">
+	<li><a href="{php echo $this->createWebUrl('exchange')}">商品兑换记录</a></li>
+	<li><a href="{php echo $this->createWebUrl('win_exchange')}">奖品兑换记录</a></li>
+	<li><a href="{php echo $this->createWebUrl('coin_exchange')}">步数兑换记录</a></li>
+    <li><a href="{php echo $this->createWebUrl('xuni')}">虚拟兑换记录</a></li>
+    <li class="active"><a href="{php echo $this->createWebUrl('xuni_post')}">添加虚拟兑换记录</a></li>
+</ul>
+<div class="clearfix">
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit="return formcheck()" style="">
+		<input type="hidden" name="id" value="{$info['id']}">
+		<div class="panel panel-default" style="">
+			<div class="panel-heading">
+				添加
+			</div>
+			<div class="panel-body">
+			<div class="form-group">
+				<label class="col-xs-6 col-sm-3 col-md-2 control-label">加虚拟记录的商品</label>
+				<div class="col-md-6 mathyts ">
+                       <select name="goods_id" class="form-control form-control_s" >
+                           <option value="" {if $info['goos_id']== ''}selected{/if}>商品列表</option>
+                           {loop $goods $index $data}                           
+                           <option value="{$data['id']}" {if $info['goods_id'] == $data['id']}selected{/if}>{$data['goods_name']}</option>
+                           {/loop}
+                       </select>
+                </div>					
+			</div>
+			<div class="form-group">
+				<label class="col-xs-12 col-sm-3 col-md-2 control-label">用户昵称</label>
+				<div class="col-sm-9 col-xs-12">
+					<input type="text" name="nick_name" id="advname" class="form-control" value="{$info['nick_name']}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">用户头像</label>
+				<div class="col-sm-8">
+					{php echo tpl_form_field_image('head_pic',$info['head_pic']);}
+					<div style="color: red !important;">建议尺寸：80*80
+				    </div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-xs-6 col-sm-3 col-md-2 control-label">购买时间</label>
+				<div class="col-sm-9 col-xs-12">
+					 {php echo tpl_form_field_date('time',$info['time'], $withtime = true);}
+				</div>					
+			</div>
+			</div>
+		</div>
+		<div class="form-group col-sm-12">
+			{if empty($info['id'])}
+				<input type="hidden" name="act" value="add">
+			{else}
+				<input type="hidden" name="act" value="edit">
+			{/if}
+			<input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1">
+		</div>
+	</form>
+</div>
+{template 'common/footer'}

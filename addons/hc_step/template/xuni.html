@@ -1,0 +1,79 @@
+{template 'common/header'}
+
+
+<style>
+    .mathyts{
+        overflow:hidden;
+      
+    }
+    .mathyts span{
+        float:left;
+        line-height:36px;
+    }
+    .form-control_s{
+        float:right;
+        width:60%;
+    }
+</style>
+<ul class="nav nav-tabs">
+	<li><a href="{php echo $this->createWebUrl('exchange')}">商品兑换记录</a></li>
+	<li><a href="{php echo $this->createWebUrl('win_exchange')}">奖品兑换记录</a></li>
+	<li><a href="{php echo $this->createWebUrl('coin_exchange')}">步数兑换记录</a></li>
+    <li class="active"><a href="{php echo $this->createWebUrl('xuni')}">虚拟兑换记录</a></li>
+    <li><a href="{php echo $this->createWebUrl('xuni_post')}">添加虚拟兑换记录</a></li>
+</ul>
+<div class="clearfix">
+
+	<div class="panel panel-default">
+
+		<div class="table-responsive">
+
+			<table class="table table-hover">
+
+				<thead class="navbar-inner">
+					<tr>
+						<th style="width:18%;" class="text-center">ID</th>
+						<th style="width:18%;" class="text-center">头像</th>					
+						<th style="width:18%;" class="text-center">昵称</th>
+						<th style="width:18%;" class="text-center">商品</th>
+						<th style="width:18%;" class="text-center">购买时间</th>
+						<th style="width:18%;" class="text-center">操作</th>
+					</tr>
+				</thead>
+
+				<tbody>
+
+				{loop $list $index $item}
+
+					<tr id="{$item['id']}">
+						<td class="text-center">{$item['id']}</td>
+						<td class="text-center"><img class="scrollLoading" src="{media $item['head_pic']}" data-url="{media $item['head_pic']}"  height="50" width="50"></td>					
+						<td class="text-center">{$item['nick_name']}</td>
+						<td class="text-center">{$item['goods_name']}</td>
+						<td class="text-center">{$item['time']}</td>
+						<td class="text-right">
+						<a href="{php echo $this->createWebUrl('xuni_post',array('id'=>$item['id']))}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="修改"><i class="fa fa-edit"></i></a>
+						<a href="{php echo $this->createWebUrl('xuni_post',array('act'=>'del','id'=>$item['id']))}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="删除"><i class="fa fa-times"></i></a>
+					    </td>
+					</tr>
+
+				{/loop}
+				{if empty($list) }
+                <tr ng-if="!wechats">
+                <td colspan="9" class="text-center">暂无数据</td>
+                </tr>
+                {/if}
+				<tr>
+					<td colspan="6" style="text-align:right">{$page}</td>
+				</tr>
+				</tbody>
+
+			</table>
+
+		</div>
+
+	</div>
+
+</div>
+
+{template 'common/footer'}

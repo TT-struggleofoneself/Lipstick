@@ -1,0 +1,38 @@
+{template 'common/header'}
+<style>
+	.dag,.dagtwo,.dagthree,.dagfor{
+		display:none;
+	}
+</style>
+<div class="clearfix">
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit="return formcheck()">
+		<input type="hidden" name="id" value="{$info['id']}">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				发货
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">快递公司</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="expressname" class="form-control" value="{$info['expressname']}">
+					</div>
+				</div>				
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">快递单号</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="express" class="form-control" value="{$info['express']}">
+					</div>
+				</div>				
+			</div>
+		</div>
+		<div class="form-group col-sm-12">
+			<input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1">
+			<input type="hidden" name="act" value="{$type}">
+		</div>
+	</form>
+</div>
+
+{template 'common/footer'}

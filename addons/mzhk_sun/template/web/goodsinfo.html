@@ -1,0 +1,303 @@
+{template 'public/header'}
+
+{template 'public/comhead'}
+
+<link rel="stylesheet" type="text/css" href="../addons/mzhk_sun/template/public/ygcss.css">
+
+<ul class="nav nav-tabs">
+    <span class="ygxian"></span>
+    <div class="ygdangq">当前位置:</div>
+    <li class="active"><a href="javascript:void(0);">商品信息</a></li>
+    <li><a href="{php echo $this->createWebUrl('goods');}"><i class="fa fa-refresh"></i>返回商品列表审核</a></li>
+</ul>
+<div class="main ygmain">
+    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+        <div class="panel panel-default ygdefault">
+
+            <div class="panel-heading wyheader">
+                商品信息
+            </div>
+            <div class="panel-body">
+                <!--<div class="form-group" style="width: 90%;margin-left: 15px;">-->
+                    <!--<label class="col-xs-12 col-sm-3 col-md-2 control-label">商品类型</label>-->
+                    <!--<div class="col-sm-10">-->
+
+                        <!--<input type="radio" value="2"  class="chick1"  name="lid"{if $info['lid']==2 || empty($info['tid'])}checked{/if} >砍价-->
+                        <!--<input type="radio" value="3"  class="chick1"  name="lid" {if $info['lid']==3}checked{/if}>拼团-->
+                        <!--<input type="radio" value="4"  class="chick1"  name="lid" {if $info['lid']==4 }checked{/if} >集卡-->
+                        <!--<input type="radio" value="5" class="chick1"   name="lid" {if $info['lid']==5}checked{/if}>抢购-->
+                        <!--<input type="radio" value="6"  class="chick1"  name="lid"{if $info['lid']==6 }checked{/if} >会员免费-->
+                    <!--</div>-->
+                <!--</div>-->
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品名称</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="goods_name" class="form-control" value="{$info['gname']}" />
+                    </div>
+                </div>
+                <div class="form-group">
+
+                    <label class="col-sm-2 control-label">所属门店</label>
+                    <div class="col-sm-10">
+                        <select name="bid" class="col-md-6" id="groupid">
+
+                            <option value="0">请选择所属门店</option>
+
+                            {loop $brand $row}
+
+                            <option name="unopction" value="{$row['bid']}$$${$row['bname']}" {if $info['bid']==$row['bid']} selected{/if}>{$row['bname']}</option>
+
+                            {/loop}
+
+                        </select>
+
+                        <!-- <span class="btn btn-sm ygbtn" data-toggle="modal" data-target="#myModal1">搜索城市</span> -->
+
+                    </div>
+                    <div class="help-block col-sm-push-2 col-sm-12">*该商品所属那家门店</div>
+                </div>
+                <div class="form-group shopprice">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品原价</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="shopprice" class="form-control" value="{$info['shopprice']}" style="width: 250px;" />
+                    </div>
+                    <div class="help-block col-sm-push-2 col-sm-12">*单位以元为计算</div>
+                </div>
+
+                <div class="form-group kj">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">会员价</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="vipprice" class="form-control" value="{$info['vipprice']}"  style="width: 250px;"/>
+                    </div>
+                    <div class="help-block col-sm-push-2 col-sm-12">*当该商品为非会员商品时才起作用，为0则不启用会员价</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">活动库存</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="num" class="form-control" value="{$info['num']}"  style="width: 50px;"/>
+                    </div>
+                    <div class="help-block col-sm-push-2 col-sm-12">*单位以件为计算</div>
+                </div>
+
+                <div class="form-group" style="width: 90%;margin-left: 15px;">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品是否推荐到首页</label>
+                    <div class="col-sm-10">
+                        <input type="radio" value="2" name="tid" {if $info['tid']==2 || empty($info['tid'])}checked{/if} >普通
+                        <input type="radio" value="1" name="tid" {if $info['tid']==1}checked{/if}>推荐
+
+                    </div>
+                </div>
+
+                <div class="form-group" style="width: 90%;margin-left: 15px;">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否会员商品</label>
+                    <div class="col-sm-10">
+                        <input type="radio" value="0" name="is_vip" {if $info['is_vip']==0 || empty($info['is_vip'])}checked{/if} >非会员
+                        <input type="radio" value="1" name="is_vip" {if $info['is_vip']==1}checked{/if}>会员
+                    </div>
+                </div>
+
+                <div class="form-group" style="width: 90%;margin-left: 15px;">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">库存计数方式</label>
+                    <div class="col-sm-10">
+                        <input type="radio" value="0" name="stocktype" {if $info['stocktype']==0 || empty($info['stocktype'])}checked{/if} >下单减库存
+                        <input type="radio" value="1" name="stocktype" {if $info['stocktype']==1}checked{/if}>付款减库存
+                    </div>
+                </div>
+
+                <div class="form-group time" >
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">活动开始时间</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="layui-input" name="astime" value="{$info['astime']}" id="astime" placeholder="yyyy-MM-dd H:i:s" style="width: 150px">
+                    </div>
+                </div>
+
+                <div class="form-group time" >
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">活动结束时间</label>
+                    <div class="col-sm-10 ">
+                        <input type="text" class="layui-input" name="antime" value="{$info['antime']}" id="antime" placeholder="yyyy-MM-dd H:i:s" style="width: 150px">
+                    </div>
+                </div>
+
+                <!-- <div class="form-group time" >
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">核销期限</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="layui-input" name="astime" value="{$info['astime']}" id="astime" style="width: 150px">天
+                    </div>
+                    
+                </div> -->
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="sort" class="form-control" value="{if $info}{$info['sort']}{else}255{/if}"  style="width: 50px;"/>
+                    </div>
+                    <div class="help-block col-sm-push-2 col-sm-12">*越小越靠前，一般0~255，默认255</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">配送方式</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline">
+                            <input type="checkbox" id="emailwy2" name="ship_type[]" value="1" {php if(in_array(1,$ship_type) || !$ship_type)echo "checked";}>
+                            <label for="emailwy2">到店消费</label>
+                        </label>
+                        <label class="radio-inline" show="1">
+                            <input type="checkbox" id="emailwy1" name="ship_type[]" value="2" {php if(in_array(2,$ship_type))echo "checked";}>
+                            <label for="emailwy1">送货上门</label>
+                        </label>
+                        <label class="radio-inline" show="3">
+                            <input type="checkbox" id="emailwy3" name="ship_type[]" value="3" {php if(in_array(3,$ship_type))echo "checked";}>
+                            <label for="emailwy3">快递</label>
+                        </label>
+                        <span class="help-block">*配送方式</span>
+                    </div>
+                </div>
+
+                <div class="form-group  pintuannum" style="{php if(!in_array(2,$ship_type))echo 'display: none;';}" id="shipset1">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">送货上门设置</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="ship_delivery_fee" class="form-control" value="{$info['ship_delivery_fee']}" placeholder="配送费" style="width: 200px;display: inline-block;"/>元
+                        <div class="help-block" style="padding: 5px 0 10px;">*注：这里填写配送费，默认0元</div>
+                        <input type="text" name="ship_delivery_time" class="form-control" value="{$info['ship_delivery_time']}" placeholder="配送时间" style="width: 200px;"/>
+                        <div class="help-block" style="padding: 5px 0 10px;">*注：这里填写配送时间，格式：30分钟 或者 1小时 ；需要加上小时或者分钟</div>
+                        <input type="text" name="ship_delivery_way" class="form-control" value="{$info['ship_delivery_way']}" placeholder="配送距离" style="width: 200px;display: inline-block;"/>千米
+                        <div class="help-block" style="padding: 5px 0 10px;">*注：这里填写配送距离，只要填写数字</div>
+                    </div>
+                </div>
+                <div class="form-group  pintuannum" style="{php if(!in_array(3,$ship_type))echo 'display: none;';}" id="shipset3">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">快递设置</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="ship_express_fee" class="form-control" value="{$info['ship_express_fee']}" placeholder="快递费" style="width: 200px;display: inline-block;"/>元
+                        <div class="help-block">*注：这里填写快递费，默认0元</div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="width: 90%;margin-left: 15px;">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品简介</label>
+                    <div class="col-sm-10">
+                        <textarea name="survey" class="form-control" cols="30" rows="7">{$info['probably']}</textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品详情</label>
+                    <div class="col-sm-9">
+                        {php echo tpl_ueditor('content',$info['content']);}
+                    </div>
+                    <div class="help-block col-sm-push-2 col-sm-12">*小程序仅支持文本和图片排版，复制的请清除格式之后黏贴</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">详情轮播图</label>
+                    <div class="col-sm-9">
+                        {php echo tpl_form_field_multi_image('lb_imgs',$lb_imgs);}
+                    </div>
+                    <div class="help-block col-sm-push-2 col-sm-12">*建议 750*522</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品主图</label>
+                    <div class="col-sm-9">
+                        {php echo tpl_form_field_image('pic', $info['pic']);}
+                    </div>
+                    <div class="help-block col-sm-push-2 col-sm-12">*建议比例1：1 （222*222）</div>
+                </div>
+
+
+
+      </div>
+  </div>
+        <div class="form-group">
+
+            <input type="submit" name="submit" value="保存设置" class="btn col-lg-3" style="color: white;background-color: #444444;margin-left: 550px;"/>
+
+            <input type="hidden" name="token" value="{$_W['token']}" />
+             <input type="hidden" name="id" value="{$info['gid']}" />
+
+        </div>
+
+    </form>
+
+</div>
+<script type="text/javascript">
+    $(function(){
+        $("#frame-7").show();
+        $("#yframe-7").addClass("wyactive");
+
+        $(".radio-inline").on("click",function(){
+            var a = $(this).attr("show");
+            var b = $("#emailwy"+a).prop("checked");
+            if(b){
+                $("#shipset"+a).css("display","");
+            }else{
+                $("#shipset"+a).css("display","none");
+            }
+        })
+    })
+    $(".chick1").click(function(){
+        var ids= $(this).val();
+        if(ids ==2){
+            $('.qg').hide()
+            $('.pintuan').hide();
+            $('.pintuannum').hide();
+            $('.kj').show();
+        }
+        if(ids ==3){
+            $('.qg').hide()
+            $('.kj').hide();
+            $('.pintuannum').show();
+            $('.pintuan').show();
+        }
+        if(ids ==4){
+            $('.qg').hide()
+            $('.shopprice').hide();
+            $('.kj').hide();
+            $('.pintuannum').hide();
+            $('.pintuan').hide();
+        }
+        if(ids ==5){
+            $('.qg').show()
+
+            $('.kj').hide();
+            $('.pintuannum').hide();
+            $('.pintuan').hide();
+        }
+        if(ids ==6){
+            $('.qg').hide()
+            $('.kj').hide();
+            $('.pintuannum').hide();
+            $('.pintuan').hide();
+        }
+    })
+</script>
+<script type="text/javascript">
+
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#astime',
+            type: 'datetime'
+        });
+        laydate.render({
+            elem: '#antime',
+            type: 'datetime'
+        });
+    });
+
+    layui.use('form', function () {
+        var form = layui.form;
+        form.render();
+        form.on('radio(type)', function (data) {
+            if (this.value == 1) {
+                $('#cash').hide()
+                $('#discount').show()
+            } else {
+                $('#discount').hide()
+                $('#cash').show()
+            }
+
+        })
+
+    });
+</script>
