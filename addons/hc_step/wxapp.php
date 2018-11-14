@@ -109,11 +109,6 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
 
 
 
-
-
-
-
-
     //商品列表
     public function doPageGoodslist(){
 
@@ -127,28 +122,25 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
 
 
 
-
-
     //启动图------接口
     public function doPageGetloading(){
-
         global $_GPC, $_W;      
-        $list = pdo_getall('hcstep_adv', array('enabled' => 1,'type'=>0), array(),'','displayorder asc');
+        $list = pdo_getall('hcstep_adv', array('enabled' => 1,'type'=>0,'uniacid'=>$_GPC['i']), array(),'','displayorder asc');
         foreach ($list as $k => $v) {
-            $list[$k]['thumb'] = $_W['attachurl'].$v['thumb'];
+            $list[$k]['thumb'] = $_W['attachurl'].$v['thumb'];/*  */
         }
         return $this->result(1, '启动页图片',$list[0]);
     }
 
 
-
-
-
+    //cl充值数据接口
+    public function doRechangeList(){
+        global $_GPC, $_W;      
+        $list = pdo_getall('hcstep_rechange', array('uniacid'=>$_GPC['i']), array(),'','displayorder asc');
+        return $this->result(1, '充值数据',$list);
+    }
 
     //---------------------------------以上是使用过，有用的接口----------------------------------------------------
-
-
-
 
 
 
