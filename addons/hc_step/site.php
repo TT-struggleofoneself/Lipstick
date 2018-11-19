@@ -164,6 +164,8 @@ class Hc_stepModuleSite extends WeModuleSite {
     }
 
 
+
+
     //添加商品
     public function doWebAddgoods() {
         global $_W,$_GPC;

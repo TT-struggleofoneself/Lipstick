@@ -14,7 +14,6 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
 
     //商品列表---带有分页功能
     public function  doPageShopList(){
-         echo "2222222";
          return $this->result(0, '请求成功',$json);
     }
 
@@ -48,8 +47,8 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
             $data["uniacid"]=$uniacid;
             $data["session_key"]=$session_key;
             $data["black"]=0;//正常用户
-            $data["create_time"]=time();
-            $data["last_login_time"]=time();
+            $data["create_time"]=date('y-m-d h:i:s',time());
+            $data["last_login_time"]=date('y-m-d h:i:s',time());
             $data["money"]=0;
             $result_add = pdo_insert('hcstep_users',$data);
              if($result_add){//插入成功
@@ -69,20 +68,29 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
         $header_url = $_GPC['header_url'];
         $sex = $_GPC['sex'];
         $uniacid=$_GPC['i'];
+        $fatherid=$_GPC['fatherid'];//师傅ID
+        //查询是否是否存在
+        if(!empty($fatherid)){
+            $fatherUser = pdo_get('hcstep_users',array('user_id'=>$fatherid,'uniacid'=>$uniacid));
+            if(!$fatherUser){
+                return $this->result(0, '师傅不存在');//用户不存在
+            }
+        }
+
         $user = pdo_get('hcstep_users',array('open_id'=>$openid,'uniacid'=>$uniacid));
         //先查询用户是否存在
         if($user){
             $data["nick_name"]=$nickname;
             $data["head_pic"]=$header_url;
             $data["gender"]=$sex;
+            $data["fatherid"]=$fatherid;
             //更改用户信息
             $result=pdo_update('hcstep_users',$data, array('open_id'=>$openid));
-
             $user["open_id"]="";
             $user["session_key"]="";
             $user["id"]=$user["user_id"];
-            $this->result(1, '登录成功',$user);
-
+            $user["balance"]=$user["money"];
+            return $this->result(1, '登录成功',$user);
         }else{
             return $this->result(0, '非法操作！');//用户不存在
         }
@@ -96,16 +104,21 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
         $user_id = $_GPC['user_id'];
         $uniacid = $_GPC['i'];
         $user = pdo_get('hcstep_users',array('user_id'=>$user_id,'uniacid'=>$uniacid));
+
+        //查询用户的口红数量
+        $orderCount = pdo_get('hcstep_orders', array('user_id'=>$user["user_id"],'type'=>0,'status'=>1), array('COUNT(*)'));
         //先查询用户是否存在
         if($user){
             $user["open_id"]="";
             $user["session_key"]="";
             $user["id"]=$user["user_id"];
+            $user["orderCount"]=$orderCount["COUNT(*)"];
             return $this->result(1, '获取用户信息成功',$user);
         }else{
             return $this->result(0, '非法操作！');//用户不存在
         }
     }
+
 
 
 
@@ -121,26 +134,720 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
     }
 
 
-
     //启动图------接口
     public function doPageGetloading(){
+
         global $_GPC, $_W;      
-        $list = pdo_getall('hcstep_adv', array('enabled' => 1,'type'=>0,'uniacid'=>$_GPC['i']), array(),'','displayorder asc');
+        $list = pdo_getall('hcstep_adv', array('enabled' => 1,'type'=>0), array(),'','displayorder asc');
         foreach ($list as $k => $v) {
-            $list[$k]['thumb'] = $_W['attachurl'].$v['thumb'];/*  */
+            $list[$k]['thumb'] = $_W['attachurl'].$v['thumb'];
         }
         return $this->result(1, '启动页图片',$list[0]);
     }
 
 
-    //cl充值数据接口
-    public function doRechangeList(){
+
+    //首页轮播图，小程序二维码以及游戏规则接口
+    public function doPageGetindex(){
         global $_GPC, $_W;      
-        $list = pdo_getall('hcstep_rechange', array('uniacid'=>$_GPC['i']), array(),'','displayorder asc');
-        return $this->result(1, '充值数据',$list);
+        $list = pdo_getall('hcstep_adv', array('enabled' => 1,'type'=>array('0', '1', '2'),'uniacid'=>$_GPC['i']), array(),'','displayorder asc');
+        
+        $lodingDao;
+        $homeBannerDao;
+        $erweimaDao;
+        foreach ($list as $k => $v) {
+            $list[$k]['thumb'] = $_W['attachurl'].$v['thumb'];/*  */
+            if($v['type']==0){//启动数据
+                $lodingDao=$list[$k];
+            }else if($v['type']==1){//首页banner数据
+                $homeBannerDao=$list[$k];
+            }else if($v['type']==2){//小程序二维码数据
+                $erweimaDao=$list[$k]; 
+            }
+        }
+
+        $resultData["title"]=$lodingDao["advname"];//标题
+        $resultData["loading_url"]=$lodingDao["thumb"];//启动图片
+        $resultData["banner_url"]=$homeBannerDao["thumb"];//首页banner图
+        $resultData["qrcode_url"]=$erweimaDao["thumb"];//小程序二维码图
+        $resultData["music_url"]=$_W['attachurl']."file/music1.mp3";//背景音乐文件
+        $resultData["explain_title"]=$lodingDao["advname"];//标题说明
+        $resultData["explain_info"]="1、闯关购规则
+活动开始前选择您喜欢的口红;
+每关只需将所显示的口红插满圆盘，即可过关;连闯三关就可以获得心仪的口红;
+获得商品后，填写您的收货地址，我们会以快递的形式将您的口红寄给您(仅限中国大陆地区)
+2、商品说明
+我们所提供的商品均为官方正品，支持专柜验货;
+3、快递说明
+一般情况下， 您闯关得到的商品提交订单后3个工作日内我们会为您安排发货，如遇特殊情况，我们会在公众号公布。";//规则说明
+        $resultData["notice_title"]=$lodingDao["advname"];//通知ID
+        $resultData["notice_info"]=$lodingDao["advname"];
+        return $this->result(1, '启动页图片',$resultData);
     }
 
+
+    //cl充值数据接口
+    public function  doPageRechangeList(){
+        global $_GPC, $_W;      
+        $list = pdo_getall('hcstep_rechange', array('uniacid'=>$_GPC['i'],'state'=>1), array(),'','');
+        
+        return $this->result(1, '充值类型数据',$list);
+    }
+
+
+
+    //开始游戏------接口
+    public function  doPageConsume(){
+        global $_GPC, $_W; 
+
+        $parentRatio=0.3;//师傅分成多少  30%
+
+
+        $goods_id=$_GPC['goods_id'];
+        $openid=$_GPC['openid'];
+        $user_id=$_GPC['user_id'];
+        $uniacid=$_GPC['i'];
+        //先查询用户是否存在
+        $user = pdo_get('hcstep_users',array('user_id'=>$user_id,'open_id'=>$openid,'uniacid'=>$uniacid));
+        if($user){
+            //在查询商品是否存在
+            $goods = pdo_get('hcstep_goods', array('status' => 1,'id' => $goods_id,'uniacid'=>$uniacid), array(),'','displayorder asc');
+            if($goods){//商品存在
+                //判断余额是否充足
+                if($user["money"]<$goods["rmb"]){
+                    $resultData["balance"]=$user["money"];
+                    $resultData["price"]=$goods["rmb"];
+                    return $this->result(1024, '余额不足',$resultData); 
+                }else{//可以抽奖开始游戏
+                    //生成游戏ID
+                    $game_id="kh_yx001".time().$goods_id;
+                    $gameData["game_id"]=$game_id;
+                     //查询充值类型是多少金额
+                    $userMoneyData["money"]=$user["money"]-$goods["rmb"];
+                    
+                    //记录金额变动的记录
+                    $moneylogData["user_id"]=$user_id;
+                    $moneylogData["goods_id"]=$goods_id;
+                    $moneylogData["type"]="1";
+                    $moneylogData["last_money"]=$user["money"];
+                    $moneylogData["current_money"]=$userMoneyData["money"];
+                    $moneylogData["add_time"]=date('y-m-d h:i:s',time());
+                    $moneylogData["change_money"]=$goods["rmb"];
+                    $moneylogData["game_level"]="0";
+                    $moneylogData["game_id"]=$game_id;
+                    //增加金额变动记录
+                    pdo_insert('hcstep_moneylog',$moneylogData);
+
+                    //更新用户钱包
+                    $result=pdo_update('hcstep_users',$userMoneyData, array('user_id'=>$user["user_id"]));
+                    if($result){
+                        //如果有师傅ID  那么说明有师傅，就要分钱
+                        if(!empty($user["fatherid"])){
+                            //先查询师傅--用户
+                            $fatherUser = pdo_get('hcstep_users',array('user_id'=>$user["fatherid"],'uniacid'=>$uniacid));
+                            if($fatherUser){
+                                $ratioPrice=$goods["rmb"]*$parentRatio;
+                                $fatherUserMoneyData["money"]=$fatherUser["money"]+$ratioPrice;
+                                //记录金额变动的记录
+                                $fatherMoneylogData["user_id"]=$fatherUser["user_id"];
+                                $fatherMoneylogData["goods_id"]=$goods_id;
+                                $fatherMoneylogData["type"]="1";
+                                $fatherMoneylogData["last_money"]=$fatherUser["money"];
+                                $fatherMoneylogData["current_money"]=$fatherUserMoneyData["money"];
+                                $fatherMoneylogData["add_time"]=date('y-m-d h:i:s',time());
+                                $fatherMoneylogData["change_money"]=$ratioPrice;
+                                $fatherMoneylogData["game_level"]="0";
+                                $fatherMoneylogData["game_id"]=$game_id;
+                                //增加金额变动记录
+                                $result=pdo_insert('hcstep_moneylog',$fatherMoneylogData);
+                                if($result){
+                                    pdo_update('hcstep_users',$fatherUserMoneyData, array('user_id'=>$fatherUser["user_id"]));
+
+                                }
+                            }
+                        }
+                         //先扣款----在玩游戏
+                        return $this->result(1, '可以开始游戏',$gameData); 
+                    }else{
+                        return $this->result(0, '操作异常！'); 
+                    }
+                }
+            }else{
+                 return $this->result(0, '非法操作2'); 
+            }
+            //判断余额是否充足
+        }else{
+           return $this->result(0, '非法操作1'); 
+        }
+    }
+
+
+
+    //正式游戏入口
+    public function  doPageGame(){
+        global $_GPC, $_W; 
+
+
+
+        $game_id=$_GPC['hykj'];//游戏ID
+        if($game_id!='kh_yx001'){
+             return $this->result(0, '非法操作'); 
+             exit;
+        }
+        $url='http://youxi.xiaopangxiekeji.com/app/index.html'; 
+        header("location:".$url);
+         // include $this->template('game1/index');
+    }
+
+
+
+    //模拟试玩游戏接口
+    public function  doPageGames(){
+        global $_GPC, $_W; 
+        $game_id=$_GPC['hykj'];//游戏ID
+        if($game_id!='kh_yx001'){
+             return $this->result(0, '非法操作'); 
+             exit;
+        }
+
+        $url='http://youxi.xiaopangxiekeji.com/app/index.html'; 
+        header("location:".$url);
+         // include $this->template('game1/index');
+    }
+
+
+    //支付----接口
+    public function doPagePay(){
+        global $_GPC, $_W;
+       
+        $user_id = $_GPC['user_id'];
+        $rechange_id = $_GPC['rechange_id'];//充值类型ID---确定充值多少金额
+        $weid= $_GPC['i'];
+        //查询兑换类型是否存在
+
+        $rechange = pdo_get('hcstep_rechange',array('id'=>$rechange_id));
+       if(empty($rechange)){
+             return $this->result(0, '非法操作！');
+        }
+        $user = pdo_get('hcstep_users',array('user_id'=>$user_id));
+        if(empty($rechange)){
+             return $this->result(0, '非法操作！');
+        }
+       
+         
+        $data = array(
+            'weid' => $weid,
+            'uid'  => $user_id,
+            'goods_id'  => $rechange_id,//如果是充值的话那么goods_id 为hcstep_rechange 表中的ID
+            'paytype'  => 0,
+            'fee'      => 1,//测试金额//$rechange["price"]*100,
+            'ordersn'  => date('YmdHis').time().rand(100000,999999),
+            'status'   => 1,
+            'createtime'=>date('y-m-d h:i:s',time())
+        );
+        $res = pdo_insert('hcstep_payment',$data);
+        if(!empty($res)){
+                 //订单号
+                $oid = pdo_insertid();
+                //普通
+                $order['uniacid'] = $weid;
+                $order['userName'] = $user["nick_name"];
+                $order['postalCode'] = "";//邮政编码
+                $order['provinceName'] = "";
+                $order['cityName'] =  "";
+                $order['countyName'] =  "";
+                $order['detailInfo'] =  "充值金额：".$rechange["price"]."元";
+                $order['nationalCode'] = "";
+                $order['telNumber'] = "";
+                $order['user_id'] = $user_id;
+                $order['goods_id'] = $rechange_id;
+                $order['type'] = 2;//表示充值
+                $order['status'] = 0;
+                $order['oid'] = $oid;
+                $order['time'] = date('y-m-d h:i:s',time());
+                $aaa = pdo_insert('hcstep_orders', $order, $replace = true);
+        }
+        $pay_params = $this->payment($oid);
+        if (is_error($pay_params)) {
+            return $this->result(0, '支付失败，请重试');
+        }
+        return $this->result(1, '',$pay_params);
+    }
+
+
+    /**
+     * 调起微信支付
+     */
+    public function payment($order_id){
+        global $_GPC, $_W;
+        $weid = $_GPC['i'];
+        load()->model('payment');
+        load()->model('account');
+        $setting = uni_setting($weid, array('payment'));
+        $wechat_payment = array(
+            'appid'   => $_W['account']['key'],
+            'signkey' => $setting['payment']['wechat']['signkey'],
+            'mchid'   => $setting['payment']['wechat']['mchid'],
+        );
+
+        // echo "<pre>";print_r($wechat_payment);die;
+        $order  = pdo_get('hcstep_payment',array('id'=>$order_id,'weid'=>$weid));
+
+        $openid = pdo_getcolumn('hcstep_users',array('user_id'=>$order['uid']),array('open_id'));
+        //返回小程序参数
+        $notify_url = $_W['siteroot'].'addons/hc_step/wxpay.php';
+        // echo "支付回调地址：".$notify_url;exit;
+
+        $res = $this->getPrePayOrder($wechat_payment,$notify_url,$order,$openid);
+        
+        if($res['return_code']=='FAIL'){
+            return $this->result(0, '操作失败',$res['return_msg']);
+        }
+        if($res['result_code']=='FAIL'){
+            return $this->result(0, '操作失败',$res['err_code'].$res['err_code_des']);
+        }
+
+        if($res['return_code']=='SUCCESS'){
+            $wxdata = $this->getOrder($res['prepay_id'],$wechat_payment,$order_id);
+            //echo "<pre>";print_r($wxdata);
+            pdo_update('hcstep_payment', array('package'=>$res['prepay_id']), array('id'=>$order_id));
+
+            return $this->result(1, '操作成功',$wxdata);
+        }else{
+            return $this->result(0, '操作失败');
+        }
+    }
+    
+    //微信统一支付
+    public function getPrePayOrder($wechat_payment,$notify_url,$order,$openid){
+        $model = new HcfkModel();
+        $url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+        
+        $data["appid"] = $wechat_payment['appid'];
+        $data["body"] = $order['ordersn'];
+        $data["mch_id"] = $wechat_payment['mchid'];
+        $data["nonce_str"] = $model->getRandChar(32);
+        $data["notify_url"] = $notify_url;
+        $data["out_trade_no"] = $order['ordersn'];
+        $data["spbill_create_ip"] = $model->get_client_ip();
+        $data["total_fee"] = "1";//测试金额//$order['fee']*100;
+        $data["trade_type"] = "JSAPI";
+        $data["openid"] = $openid;
+        $data["sign"] = $model->getSign($data,$wechat_payment['signkey']);
+    
+        $xml = $model->arrayToXml($data);
+        $response = $model->postXmlCurl($xml, $url);
+        return $model->xmlstr_to_array($response);
+    }
+    
+
+
+
+
+    // 执行第二次签名，才能返回给客户端使用
+    public function getOrder($prepayId,$wechat_payment,$order_id){
+        global $_GPC, $_W;
+        $model = new HcfkModel();
+        $data["appId"] = $wechat_payment['appid'];
+        $data["nonceStr"] = $model->getRandChar(32);
+        $data["package"] = "prepay_id=".$prepayId;
+        $data['signType'] = "MD5";
+        $data["timeStamp"] = date('y-m-d h:i:s',time());
+        $order = pdo_get('hcstep_orders',array('oid'=>$order_id));
+        $data['order_id'] = $order['id'];
+        $data["sign"] = $model->getSign1($data,$wechat_payment['signkey']);
+        return $data;
+    }
+
+
+
+
+
+
+    //我的订单-----接口
+    public function  doPageOrderlist(){
+        global $_GPC, $_W; 
+        $user_id = $_GPC['user_id'];
+        $uniacid=$_GPC['i'];
+        $pindex = max(intval($_GPC['page']), 1);
+        $psize = 20;
+        // $list = pdo_getslice('ims_hcstep_orders', array('type' => 0), array($pindex, $psize), $total, array(), '', array('id desc'));
+        // $list = pdo_getslice('ims_hcstep_orders', array('type' => 0), array($pindex, $psize), $total, array(), '', array('id desc'));
+        $list = pdo_getall('hcstep_orders', array('type'=>0,'status'=>1,'user_id'=>$user_id));
+        foreach ($list as $key => $value) {
+            //查询商品信息
+             $goods = pdo_get('hcstep_goods', array('status' => 1,'id' => $goods_id,'uniacid'=>$uniacid), array(),'','displayorder asc');
+             echo  $goods ;exit;
+             $list[$key]["good_name"]=$goods["goods_name"];
+             $list[$key]["main_img"]=$goods["main_img"];
+             $list[$key]["zg_price"]=$goods["price2"];//专柜价格。
+        }
+        return $this->result(1, '请求成功',$list);
+    }
+
+
+
+    //游戏结束-----接口
+    public function doPageEndGame(){
+        global $_GPC, $_W;  
+        $user_id = $_GPC['user_id'];
+        $goods_id = $_GPC['goods_id'];
+        $game_id = $_GPC['game_id'];
+        $openid = $_GPC['openid'];
+        $level = $_GPC['level'];
+        $uniacid = $_GPC['i'];
+        // echo $user_id; echo $openid; echo $uniacid;exit;
+        //先查询用户是否存在
+        $user = pdo_get('hcstep_users',array('user_id'=>$user_id,'open_id'=>$openid,'uniacid'=>$uniacid));
+        if($user){
+            //在查询商品是否存在
+            $goods = pdo_get('hcstep_goods', array('status' => 1,'id' => $goods_id,'uniacid'=>$uniacid), array(),'','displayorder asc');
+            if($goods){//商品存在
+                //先查询消费记录是否存在
+                 $moneylog = pdo_get('hcstep_moneylog',array('game_id'=>$game_id,'goods_id'=>$goods_id,'user_id'=>$user["user_id"]));
+                 
+                 if($moneylog && $moneylog["game_level"]==0){
+                     $moneylogData["game_level"]=$level;
+                     // var_dump($moneylogData);    exit;
+                     $result=pdo_update('hcstep_moneylog',$moneylogData, array('game_id'=>$game_id,'goods_id'=>$goods_id,'user_id'=>$user["user_id"]));
+
+                     // pdo_debug();
+                     // echo  $result;exit;
+
+                     // exit;
+                     if($result &&  $level==3){
+                            //增加一条订单记录
+                            $order['uniacid'] = $uniacid;
+                            $order['userName'] = $user["nick_name"];
+                            $order['postalCode'] = "";//邮政编码
+                            $order['provinceName'] = "";
+                            $order['cityName'] =  "";
+                            $order['countyName'] =  "";
+                            $order['detailInfo'] =  "恭喜您获得".$goods["goods_name"].'一支';
+                            $order['nationalCode'] = "";
+                            $order['telNumber'] = "";
+                            $order['user_id'] = $user["user_id"];
+                            $order['goods_id'] = $goods_id;
+                            $order['type'] = 0;//表示通过玩游戏通关兑换的商品
+                            $order['status'] = 1;
+                            $order['oid'] = '';
+                            $order['time'] = date('y-m-d h:i:s',time());
+                            $order['game_id'] = $game_id;
+                            $inserOrderResult = pdo_insert('hcstep_orders', $order, $replace = true);
+                            $id = pdo_insertid();
+                            if($inserOrderResult){
+                                $appData["id"]=$id;
+                                $appData["detailInfo"]=$order['detailInfo'];
+                                $appData["game_id"]=$game_id;
+                                $appData["user_id"]=$user["user_id"];
+                                $appData["goods_id"]=$goods_id;
+                                return $this->result(1, '兑换成功',$appData);
+                            }else{
+                                return $this->result(0, '操作异常');
+                            }
+                     }else{
+                        return $this->result(0 ,'没有达到兑换条件');
+                     }
+                 }else{
+                    return $this->result(0, '非法操作3');
+                 }
+            }else{
+                 return $this->result(0, '非法操作2');
+            }
+        }else{
+               return $this->result(0, '非法操作1');
+        }
+    }
+
+
+    //得到奖品天蝎收货地址-----接口
+    public function  doPageAddress(){
+        global $_GPC, $_W; 
+        $user_id = $_GPC['user_id'];
+        $uniacid=$_GPC['i'];
+        $address=$_GPC['address'];
+        $order_id=$_GPC['order_id'];
+        $name=$_GPC['name'];
+        $mobile=$_GPC['mobile'];
+        $goods_id=$_GPC['goods_id'];
+
+        //先查询订单是否真实存在
+        $order = pdo_get('hcstep_orders', array('type' => 0,'status'=>1,'user_id'=>$user_id,'goods_id' => $goods_id,'id'=>$order_id,'uniacid'=>$uniacid));
+        // pdo_debug();exit;
+        if($order){
+             $data["address"]=$address;
+             $data["telNumber"]=$mobile;
+             $data["userName"]=$name;
+             $result=pdo_update('hcstep_orders',$data, array('id'=>$order["id"]));
+             if($result){
+                return $this->result(1, '提交成功，请联系客服领取！');
+             }else{
+                 return $this->result(0, '操作异常');
+             }
+        }else{
+            return $this->result(0, '非法操作');
+        }
+    }
+
+
     //---------------------------------以上是使用过，有用的接口----------------------------------------------------
+
+
+
+
+
+    //  //测试支付回调----接口
+    // public function doPageResultPay(){
+    //     global $_GPC, $_W;
+
+
+    //     $resultPayString="<xml><appid><![CDATA[wxa6e3e60146dd636c]]></appid>
+    //     <bank_type><![CDATA[CFT]]></bank_type>
+    //     <cash_fee><![CDATA[1]]></cash_fee>
+    //     <fee_type><![CDATA[CNY]]></fee_type>
+    //     <is_subscribe><![CDATA[N]]></is_subscribe>
+    //     <mch_id><![CDATA[1404617902]]></mch_id>
+    //     <nonce_str><![CDATA[ioaBqWmeBpVi7DewRsNaqBFYXXHkfd9s]]></nonce_str>
+    //     <openid><![CDATA[owXJZ5NDBN8neca2hNgKb-5SFgUM]]></openid>
+    //     <out_trade_no><![CDATA[201811161324161542345856480205]]></out_trade_no>
+    //     <result_code><![CDATA[SUCCESS]]></result_code>
+    //     <return_code><![CDATA[SUCCESS]]></return_code>
+    //     <sign><![CDATA[1F76891093CF66E9F3C0CA283AFA2079]]></sign>
+    //     <time_end><![CDATA[20181116132421]]></time_end>
+    //     <total_fee>1</total_fee>
+    //     <trade_type><![CDATA[JSAPI]]></trade_type>
+    //     <transaction_id><![CDATA[4200000231201811166541693376]]></transaction_id>
+    //     </xml>";
+    //     // libxml_disable_entity_loader(true);
+    //     // $xmlstring = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+    //     // $payreturn = json_decode(json_encode($xmlstring),true);
+    //     // echo "解析结果：";
+    //     $payreturn=$this->xmlToArray($resultPayString);
+
+    //     if ($payreturn['result_code'] == 'SUCCESS' && $payreturn['result_code'] == 'SUCCESS') {
+
+    //         $ordersn = trim($payreturn['out_trade_no']);
+    //         //查询支付表中的支付记录
+    //         $order = pdo_get('hcstep_payment',array('ordersn'=>$ordersn));
+
+    //        //更改订单的状态
+    //         $goods_order = pdo_get('hcstep_orders',array('goods_id'=>$order['goods_id'],'oid'=>$order['id']));
+    //         if($goods_order){
+    //             pdo_update('hcstep_orders', array('status'=>1), array('goods_id'=>$order['goods_id'],'oid'=>$order['id']));
+    //         }
+
+    //         //更改
+    //         $user = pdo_get('hcstep_users',array('user_id'=>$order['uid']));
+    //         if ($order){
+    //             var_dump($order);
+    //             //更新订单状态
+    //             $order_data = array(
+    //                 'paystatus'=>1,
+    //                 'paytime'=>time(),
+    //                 'transid'=>$payreturn['transaction_id']
+    //             );
+    //             pdo_update('hcstep_payment', $order_data, array('ordersn'=>$ordersn));
+
+    //         }
+    //         //查询支付类型
+    //         $type = pdo_getcolumn('hcstep_payment',array('ordersn'=>$ordersn),array('paytype'));
+    //         if($type == 0){//微信支付
+    //             //查询用户信息
+    //             //查询充值类型是多少金额
+    //             $user = pdo_get('hcstep_users',array('user_id'=>$order['uid']));
+    //             $rechange = pdo_get('hcstep_rechange', array('id'=>$order["goods_id"]));
+    //             $userMoneyData["money"]=$user["money"]+$rechange["price"];
+    //             $result=pdo_update('hcstep_users',$userMoneyData, array('user_id'=>$user["user_id"]));
+    //         }
+            
+
+
+    //         // if($type == 0){
+    //         //     $user_data = array('status'=>0);
+    //         //     pdo_update('hcstep_orders', $user_data, array('oid'=>$order['id']));       //用户状态为代理
+    //         //     $nowinventory = $goods['inventory'] - 1;//库存减少
+    //         //     pdo_update('hcstep_goods',array('inventory'=>$nowinventory), array('id' => $order['goods_id']));
+    //         // }
+    //         // if($type == 1)
+    //         // {
+    //         //     $user_data = array('status'=>0);
+    //         //     pdo_update('hcstep_orders', $user_data, array('oid'=>$order['id']));       //用户状态为代理
+    //         //     $nowinventory = $goods['inventory'] - 1;
+    //         //     pdo_update('hcstep_goods',array('inventory'=>$nowinventory), array('id' => $order['goods_id']));
+    //         //     $nowmoney = $user['money'] - $goods['price2'];
+    //         //     pdo_update('hcstep_users',array('money'=>$nowmoney), array('user_id' =>$order['uid']));
+    //         // }
+    //         echo 'success';
+    //     }else{
+    //          echo  "失败了";
+    //     }
+                    
+        
+
+    // }
+
+
+
+    // function arrayToXml($arr)
+    // {
+    //     $xml = "<xml>";
+    //     foreach ($arr as $key=>$val)
+    //     {
+    //         if (is_numeric($val)){
+    //             $xml.="<".$key.">".$val."</".$key.">";
+    //         }else{
+    //              $xml.="<".$key."><![CDATA[".$val."]]></".$key.">";
+    //         }
+    //     }
+    //     $xml.="</xml>";
+    //     return $xml;
+    // }
+
+    //  //将XML转为array
+    // function xmlToArray($xml)
+    // {
+    //     //禁止引用外部xml实体
+    //     libxml_disable_entity_loader(true);
+    //     $values = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+    //     return $values;
+    // }
+
+
+
+
+
+
+    //商品购买支付----接口-----暂时没用上
+    public function doPageGoodsPay(){
+        global $_GPC, $_W;
+        $uid = $_GPC['user_id'];
+        $goods_id = $_GPC['goods_id'];
+        $paytype = $_GPC['state'];
+        $weid= $_GPC['i'];
+        $goods = pdo_get('hcstep_goods',array('id'=>$goods_id));
+        $user = pdo_get('hcstep_users',array('user_id'=>$uid));
+        if($paytype == 0){
+            $fee = $goods['maxrmb'];
+            $orders = pdo_getall('hcstep_orders', array('uniacid'=>$_GPC['i'],'user_id'=>$_GPC['user_id'],'goods_id'=>$_GPC['goods_id']));
+            $ordersum = count($orders);
+            if($goods['inventory'] <=0 ){
+            return $this->result(0, '库存不足',$goods);
+            }
+            if($goods['maxbuy'] > 0){
+                if($ordersum >= $goods['maxbuy']){
+                    // echo "111111";exit;
+                    return $this->result(0, '已达兑换上限',$user);
+                }
+            }
+        }
+        // if($paytype == 1){
+        //     $fee = $goods['rmb'];
+        //     if($user['money'] < $goods['price2']){
+        //         return $this->result(1, '金币不足');
+        //     }
+        //     if($goods['inventory'] <=0 ){
+        //     return $this->result(1, '库存不足',$goods);
+        //     }
+        //     $orders = pdo_getall('hcstep_orders', array('uniacid'=>$_GPC['i'],'user_id'=>$_GPC['user_id'],'goods_id'=>$_GPC['goods_id']));
+        //     $ordersum = count($orders);
+        //     if($goods['maxbuy'] > 0){
+        //         if($ordersum >= $goods['maxbuy']){
+        //             return $this->result(1, '已达兑换上限',$user);
+        //         }
+        //     }
+        // }        
+        $data = array(
+            'weid' => $weid,
+            'uid'  => $uid,
+            'goods_id'  => $goods_id,
+            'paytype'  => $paytype,
+            'fee'      => $fee,
+            'ordersn'  => date('YmdHis').time().rand(100000,999999),
+            'status'   => 1,
+            'createtime'=>time()
+        );
+        $res = pdo_insert('hcstep_payment',$data);
+        if(!empty($res)){
+            $oid = pdo_insertid();
+            //写入订单表
+            if($paytype == 0){
+
+                if($goods['selltype'] == 1){//核销
+                    $order['uniacid'] = $_GPC['i'];
+                    $order['user_id'] = $_GPC['user_id'];
+                    $order['goods_id'] = $_GPC['goods_id'];
+                    $order['type'] = 10;
+                    $order['status'] = 2;
+                    $order['oid'] = $oid;
+                    $order['time'] = time();
+                              
+                    $aaa = pdo_insert('hcstep_orders', $order, $replace = true);
+                }else{//普通
+                    $order['uniacid'] = $_GPC['i'];
+                    $order['userName'] = $_GPC['userName'];
+                    $order['postalCode'] = $_GPC['postalCode'];
+                    $order['provinceName'] = $_GPC['provinceName'];
+                    $order['cityName'] = $_GPC['cityName'];
+                    $order['countyName'] = $_GPC['countyName'];
+                    $order['detailInfo'] = $_GPC['detailInfo'];
+                    $order['nationalCode'] = $_GPC['nationalCode'];
+                    $order['telNumber'] = $_GPC['telNumber'];
+                    $order['user_id'] = $_GPC['user_id'];
+                    $order['goods_id'] = $_GPC['goods_id'];
+                    $order['type'] = 0;
+                    $order['status'] = 2;
+                    $order['oid'] = $oid;
+                    $order['time'] = time();
+                              
+                    $aaa = pdo_insert('hcstep_orders', $order, $replace = true);
+                }             
+            }
+            // if($paytype == 1){
+
+            //     if($goods['selltype'] == 1){
+            //         $order['uniacid'] = $_GPC['i'];
+            //         $order['user_id'] = $_GPC['user_id'];
+            //         $order['goods_id'] = $_GPC['goods_id'];
+            //         $order['type'] = 11;
+            //         $order['status'] = 2;
+            //         $order['oid'] = $oid;
+            //         $order['time'] = time();
+                              
+            //         $aaa = pdo_insert('hcstep_orders', $order, $replace = true);
+            //     }else{
+            //         $order['uniacid'] = $_GPC['i'];
+            //         $order['userName'] = $_GPC['userName'];
+            //         $order['postalCode'] = $_GPC['postalCode'];
+            //         $order['provinceName'] = $_GPC['provinceName'];
+            //         $order['cityName'] = $_GPC['cityName'];
+            //         $order['countyName'] = $_GPC['countyName'];
+            //         $order['detailInfo'] = $_GPC['detailInfo'];
+            //         $order['nationalCode'] = $_GPC['nationalCode'];
+            //         $order['telNumber'] = $_GPC['telNumber'];
+            //         $order['user_id'] = $_GPC['user_id'];
+            //         $order['goods_id'] = $_GPC['goods_id'];
+            //         $order['type'] = 1;
+            //         $order['status'] = 2;
+            //         $order['oid'] = $oid;
+            //         $order['time'] = time();
+                              
+            //         $aaa = pdo_insert('hcstep_orders', $order, $replace = true);
+            //     }              
+            // }
+            $pay_params = $this->payment($oid);
+            if (is_error($pay_params)) {
+                return $this->result(0, '支付失败，请重试');
+            }
+            return $this->result(1, '',$pay_params);
+        }else{
+            return $this->result(0, '操作失败');
+        }
+    }
+
+
+
+
+
 
 
 
@@ -1970,206 +2677,32 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
 
     }
 
-    public function doPagePay(){
+
+
+
+
+public function doPageTestPay() {
         global $_GPC, $_W;
-        $uid = $_GPC['user_id'];
-        $goods_id = $_GPC['goods_id'];
-        $paytype = $_GPC['state'];
-        $weid= $_GPC['i'];
-        $goods = pdo_get('hcstep_goods',array('id'=>$goods_id));
-        $user = pdo_get('hcstep_users',array('user_id'=>$uid));
-        if($paytype == 0){
-            $fee = $goods['maxrmb'];
-            $orders = pdo_getall('hcstep_orders', array('uniacid'=>$_GPC['i'],'user_id'=>$_GPC['user_id'],'goods_id'=>$_GPC['goods_id']));
-            $ordersum = count($orders);
-            if($goods['inventory'] <=0 ){
-            return $this->result(1, '库存不足',$goods);
-            }
-            if($goods['maxbuy'] > 0){
-                if($ordersum >= $goods['maxbuy']){
-                    return $this->result(1, '已达兑换上限',$user);
-                }
-            }
-        }
-        if($paytype == 1){
-            $fee = $goods['rmb'];
-            if($user['money'] < $goods['price2']){
-                return $this->result(1, '金币不足');
-            }
-            if($goods['inventory'] <=0 ){
-            return $this->result(1, '库存不足',$goods);
-            }
-            $orders = pdo_getall('hcstep_orders', array('uniacid'=>$_GPC['i'],'user_id'=>$_GPC['user_id'],'goods_id'=>$_GPC['goods_id']));
-            $ordersum = count($orders);
-            if($goods['maxbuy'] > 0){
-                if($ordersum >= $goods['maxbuy']){
-                    return $this->result(1, '已达兑换上限',$user);
-                }
-            }
-        }        
-        $data = array(
-            'weid' => $weid,
-            'uid'  => $uid,
-            'goods_id'  => $goods_id,
-            'paytype'  => $paytype,
-            'fee'      => $fee,
-            'ordersn'  => date('YmdHis').time().rand(100000,999999),
-            'status'   => 1,
-            'createtime'=>time()
+        //获取订单号，保证在业务模块中唯一即可
+        $orderid = intval($_GPC['orderid']);
+        //构造支付参数
+        $order = array(
+            'tid' => $orderid,
+            'user' => $_W['openid'], //用户OPENID
+            'fee' => floatval($fee), //金额
+            'title' => '小程序支付示例',
         );
-        $res = pdo_insert('hcstep_payment',$data);
-        if(!empty($res)){
-            $oid = pdo_insertid();
-            //写入订单表
-            if($paytype == 0){
-
-                if($goods['selltype'] == 1){
-                    $order['uniacid'] = $_GPC['i'];
-                    $order['user_id'] = $_GPC['user_id'];
-                    $order['goods_id'] = $_GPC['goods_id'];
-                    $order['type'] = 10;
-                    $order['status'] = 2;
-                    $order['oid'] = $oid;
-                    $order['time'] = time();
-                              
-                    $aaa = pdo_insert('hcstep_orders', $order, $replace = true);
-                }else{
-                    $order['uniacid'] = $_GPC['i'];
-                    $order['userName'] = $_GPC['userName'];
-                    $order['postalCode'] = $_GPC['postalCode'];
-                    $order['provinceName'] = $_GPC['provinceName'];
-                    $order['cityName'] = $_GPC['cityName'];
-                    $order['countyName'] = $_GPC['countyName'];
-                    $order['detailInfo'] = $_GPC['detailInfo'];
-                    $order['nationalCode'] = $_GPC['nationalCode'];
-                    $order['telNumber'] = $_GPC['telNumber'];
-                    $order['user_id'] = $_GPC['user_id'];
-                    $order['goods_id'] = $_GPC['goods_id'];
-                    $order['type'] = 0;
-                    $order['status'] = 2;
-                    $order['oid'] = $oid;
-                    $order['time'] = time();
-                              
-                    $aaa = pdo_insert('hcstep_orders', $order, $replace = true);
-                }             
-            }
-            if($paytype == 1){
-
-                if($goods['selltype'] == 1){
-                    $order['uniacid'] = $_GPC['i'];
-                    $order['user_id'] = $_GPC['user_id'];
-                    $order['goods_id'] = $_GPC['goods_id'];
-                    $order['type'] = 11;
-                    $order['status'] = 2;
-                    $order['oid'] = $oid;
-                    $order['time'] = time();
-                              
-                    $aaa = pdo_insert('hcstep_orders', $order, $replace = true);
-                }else{
-                    $order['uniacid'] = $_GPC['i'];
-                    $order['userName'] = $_GPC['userName'];
-                    $order['postalCode'] = $_GPC['postalCode'];
-                    $order['provinceName'] = $_GPC['provinceName'];
-                    $order['cityName'] = $_GPC['cityName'];
-                    $order['countyName'] = $_GPC['countyName'];
-                    $order['detailInfo'] = $_GPC['detailInfo'];
-                    $order['nationalCode'] = $_GPC['nationalCode'];
-                    $order['telNumber'] = $_GPC['telNumber'];
-                    $order['user_id'] = $_GPC['user_id'];
-                    $order['goods_id'] = $_GPC['goods_id'];
-                    $order['type'] = 1;
-                    $order['status'] = 2;
-                    $order['oid'] = $oid;
-                    $order['time'] = time();
-                              
-                    $aaa = pdo_insert('hcstep_orders', $order, $replace = true);
-                }              
-            }
-            $pay_params = $this->payment($oid);
-            if (is_error($pay_params)) {
-                return $this->result(1, '支付失败，请重试');
-            }
-            return $this->result(0, '',$pay_params);
-        }else{
-            return $this->result(1, '操作失败');
+        //生成支付参数，返回给小程序端
+        $pay_params = $this->pay($order);
+         var_dump($pay_params );
+        if (is_error($pay_params)) {
+            return $this->result(1, '支付失败，请重试');
         }
+        return $this->result(0, '', $pay_params);
     }
-    /**
-     * 调起微信支付
-     */
-    public function payment($order_id){
-        global $_GPC, $_W;
-        $weid = $_GPC['i'];
-        load()->model('payment');
-        load()->model('account');
-        $setting = uni_setting($weid, array('payment'));
-        $wechat_payment = array(
-            'appid'   => $_W['account']['key'],
-            'signkey' => $setting['payment']['wechat']['signkey'],
-            'mchid'   => $setting['payment']['wechat']['mchid'],
-        );
-        //echo "<pre>";print_r($wechat_payment);die;
-        $order  = pdo_get('hcstep_payment',array('id'=>$order_id,'weid'=>$weid));
 
-        $openid = pdo_getcolumn('hcstep_users',array('user_id'=>$order['uid']),array('open_id'));
-        //返回小程序参数
-        $notify_url = $_W['siteroot'].'addons/hc_step/wxpay.php';
-        $res = $this->getPrePayOrder($wechat_payment,$notify_url,$order,$openid);
-        //echo "<pre>";print_r($notify_url);die;
-        if($res['return_code']=='FAIL'){
-            return $this->result(1, '操作失败',$res['return_msg']);
-        }
-        if($res['result_code']=='FAIL'){
-            return $this->result(1, '操作失败',$res['err_code'].$res['err_code_des']);
-        }
 
-        if($res['return_code']=='SUCCESS'){
-            $wxdata = $this->getOrder($res['prepay_id'],$wechat_payment,$order_id);
-            //echo "<pre>";print_r($wxdata);
-            pdo_update('hcstep_payment', array('package'=>$res['prepay_id']), array('id'=>$order_id));
 
-            return $this->result(0, '操作成功',$wxdata);
-        }else{
-            return $this->result(1, '操作失败');
-        }
-    }
-    
-    //微信统一支付
-    public function getPrePayOrder($wechat_payment,$notify_url,$order,$openid){
-        $model = new HcfkModel();
-        $url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-        
-        $data["appid"] = $wechat_payment['appid'];
-        $data["body"] = $order['ordersn'];
-        $data["mch_id"] = $wechat_payment['mchid'];
-        $data["nonce_str"] = $model->getRandChar(32);
-        $data["notify_url"] = $notify_url;
-        $data["out_trade_no"] = $order['ordersn'];
-        $data["spbill_create_ip"] = $model->get_client_ip();
-        $data["total_fee"] = $order['fee']*100;
-        $data["trade_type"] = "JSAPI";
-        $data["openid"] = $openid;
-        $data["sign"] = $model->getSign($data,$wechat_payment['signkey']);
-    
-        $xml = $model->arrayToXml($data);
-        $response = $model->postXmlCurl($xml, $url);
-        return $model->xmlstr_to_array($response);
-    }
-    
-    // 执行第二次签名，才能返回给客户端使用
-    public function getOrder($prepayId,$wechat_payment,$order_id){
-        global $_GPC, $_W;
-        $model = new HcfkModel();
-        $data["appId"] = $wechat_payment['appid'];
-        $data["nonceStr"] = $model->getRandChar(32);
-        $data["package"] = "prepay_id=".$prepayId;
-        $data['signType'] = "MD5";
-        $data["timeStamp"] = time();
-        $order = pdo_get('hcstep_orders',array('oid'=>$order_id));
-        $data['order_id'] = $order['id'];
-        $data["sign"] = $model->getSign1($data,$wechat_payment['signkey']);
-        return $data;
-    }
 
     function wx_get_token() {
         global $_GPC, $_W;

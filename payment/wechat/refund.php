@@ -8,6 +8,18 @@ require '../../framework/bootstrap.inc.php';
 load()->web('common');
 $input = file_get_contents('php://input');
 
+
+
+
+// header("Content-type: text/html; charset=utf-8");
+// $file  = 'log.txt';//要写入文件的文件名（可以是任意文件名），如果文件不存在，将会创建一个
+// $content = "支付回调了\n";
+// if($f  = file_put_contents($file, $content,FILE_APPEND)){// 这个函数支持版本(PHP 5)
+//     echo "写入成功。<br />";
+//  }
+
+
+
 if (!empty($input)) {
 	$obj = isimplexml_load_string($input, 'SimpleXMLElement', LIBXML_NOCDATA);
 	$wechat_data = json_decode(json_encode($obj), true);

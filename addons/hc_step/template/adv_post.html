@@ -61,13 +61,11 @@
 				<div class="form-group shop">
 	                <label class="col-xs-6 col-sm-3 col-md-2 control-label">类型</label>
 					<div class="col-md-6 mathyts ">
-	                       <select name="shop_id" class="form-control form-control_s" >
-	                           <option value="" {if $info['type']== '0'}selected{/if}>启动图</option>
-	                           <!--
-	                            <option value="" {if $info['type']== '1'}selected{/if}>首页轮播图</option>
-	                             <option value="" {if $info['type']== '2'}selected{/if}>门店列表</option>
-	                              <option value="" {if $info['type']== '3'}selected{/if}>门店列表</option>
-	                           -->
+	                       <select name="type" class="form-control form-control_s" >
+	                           <option value="0" {if $info['type']== '0'}selected{/if}>启动图</option>
+	                           <option value="1" {if $info['type']== '1'}selected{/if}>首页banner图</option>
+	                           <option value="2" {if $info['type']== '2'}selected{/if}>小程序二维码图</option>
+	                           
 	                       </select>
 	                </div>	
                 </div>

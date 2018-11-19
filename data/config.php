@@ -38,7 +38,7 @@ $config['setting']['memory_limit'] = '256M';
 $config['setting']['filemode'] = 0644;
 $config['setting']['authkey'] = '2a7a591e';
 $config['setting']['founder'] = '1';
-$config['setting']['development'] = 0;
+$config['setting']['development'] = 0;//控制是否打印日志， 1 打印日志  0 不打印日志。 线上的版本为0
 $config['setting']['referrer'] = 0;
 
 // --------------------------  CONFIG UPLOAD  --------------------------- //
