@@ -84,6 +84,10 @@ class Hc_stepModuleSite extends WeModuleSite {
         include $this->template("addshenhe");
     }
 
+
+
+
+
     
     public function doWebEditshenhe()
     {
@@ -431,6 +435,10 @@ class Hc_stepModuleSite extends WeModuleSite {
             $data['coinpic'] = $_GPC['coinpic'];
             $data['invitetype'] = $_GPC['invitetype'];
             $data['longbg'] = $_GPC['longbg'];
+            $data['user_level_1'] = $_GPC['user_level_1'];
+            $data['user_level_2'] = $_GPC['user_level_2'];
+            $data['user_level_3'] = $_GPC['user_level_3'];
+            $data['shard_detail'] = $_GPC['shard_detail'];
             
             $ishave = pdo_get('hcstep_set', array('uniacid' => $_W['uniacid']));
             if(!empty($ishave)){

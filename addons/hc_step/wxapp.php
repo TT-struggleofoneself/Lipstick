@@ -18,6 +18,25 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
     }
 
 
+
+    // public function doPageStartGame()
+    // {
+    //     global $_W, $_GPC;
+    //     // //这个操作被定义用来呈现 管理中心导航菜单
+    //     // if (!empty($_GPC['name'])) {
+    //     //     $data['name'] = $_GPC['name'];
+    //     //     $data['uniacid'] = $_W['uniacid'];
+    //     //     $data['sort'] = $_GPC['sort'];
+    //     //     $data['stact'] = $_GPC['stact'];
+    //     //     $data['img'] = $_GPC['img'];
+    //     //     $data['content'] = $_GPC['content'];
+    //     //     $data['time'] = date("Y-m-d");
+    //     //     pdo_insert('hczhongzhuan_shenhe', $data);
+    //     // }
+    //     include $this->template("game");
+    // }
+
+
     //微信通过code 获取openid的接口
     public function doPageLoginOpenid()
     {
@@ -201,8 +220,6 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
         global $_GPC, $_W; 
 
         $parentRatio=0.3;//师傅分成多少  30%
-
-
         $goods_id=$_GPC['goods_id'];
         $openid=$_GPC['openid'];
         $user_id=$_GPC['user_id'];
@@ -287,18 +304,25 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
     public function  doPageGame(){
         global $_GPC, $_W; 
 
+        $goods_id=$_GPC['goods_id'];
+        $game_id=$_GPC['hykj'];
+        $openid=$_GPC['openid'];
+        $user_id=$_GPC['user_id'];
+        $uniacid=$_GPC['i'];
 
+        $user = pdo_get('hcstep_users',array('user_id'=>$user_id,'open_id'=>$openid,'uniacid'=>$uniacid));
+        if($user){
+            $moneyLog = pdo_get('hcstep_moneylog',array('user_id'=>$user_id,'goods_id'=>$goods_id,'game_id'=>$game_id,'type'=>1,'game_level'=>0));
 
-        $game_id=$_GPC['hykj'];//游戏ID
-        if($game_id!='kh_yx001'){
-             return $this->result(0, '非法操作'); 
-             exit;
+            if($moneyLog){
+                include $this->template("game");
+            }else{
+                 return $this->result(0, '非法操作1'); 
+            }
+        }else{
+            return $this->result(0, '非法操作2'); 
         }
-        $url='http://youxi.xiaopangxiekeji.com/app/index.html'; 
-        header("location:".$url);
-         // include $this->template('game1/index');
     }
-
 
 
     //模拟试玩游戏接口

@@ -2,12 +2,13 @@
 <script src="/addons/hc_pdd/template/js/color.js"></script>
 <ul class="nav nav-tabs">
 	<li class="active"><a href="{php echo $this->createWebUrl('setting')}">基础设置</a></li>
-	<li><a href="{php echo $this->createWebUrl('guanzhu')}">关注设置</a></li>
-	<li><a href="{php echo $this->createWebUrl('shenhe')}">审核设置</a></li>
-	<li><a href="{php echo $this->createWebUrl('ad')}">流量主</a></li>
+<!-- 	<li><a href="{php echo $this->createWebUrl('guanzhu')}">关注设置</a></li>
+ -->	<li><a href="{php echo $this->createWebUrl('shenhe')}">审核设置</a></li>
+<!-- 	<li><a href="{php echo $this->createWebUrl('ad')}">流量主</a></li>
 	<li><a href="{php echo $this->createWebUrl('poster')}">海报设置</a></li>
 	<li><a href="{php echo $this->createWebUrl('message')}">模板消息</a></li>
 	<li><a href="{php echo $this->createWebUrl('signin')}">签到设置</a></li>
+ -->
 </ul>
 <div class="clearfixcon">
 	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" id="form1" style="display: block">
@@ -31,7 +32,61 @@
 						    </label>
 					        </div>
 				        </div>
+
+
 				        <div class="form-group">
+							<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">小程序分享标题</label>
+							<div class="col-sm-8">
+								<input type="text" name="sharetitle" class="form-control" value="{$info['sharetitle']}">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">小程序分享图片</label>
+							<div class="col-sm-8">
+								{php echo tpl_form_field_image('sharepic',$info['sharepic']);}
+								<div style="color: red !important;">建议尺寸：600*600
+							    </div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">小程序分享详情说明</label>
+							<div class="col-sm-8">
+								<input type="text" name="shard_detail" class="form-control" value="{$info['shard_detail']}">
+							</div>
+						</div>
+
+
+						<div class="form-group">
+							<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">第一级用户分润不理</label>
+							<div class="col-sm-8">
+								<input type="text" name="user_level_1" class="form-control" value="{$info['user_level_1']}">
+								<div style="color: red !important;">如果不需要分级可以不设置为0
+							    </div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">第二级用户分润不理</label>
+							<div class="col-sm-8">
+								<input type="text" name="user_level_2" class="form-control" value="{$info['user_level_2']}">
+								<div style="color: red !important;">如果不需要分级可以不设置为0
+							    </div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">第三级用户分润不理</label>
+							<div class="col-sm-8">
+								<input type="text" name="user_level_3" class="form-control" value="{$info['user_level_3']}">
+								<div style="color: red !important;">如果不需要分级可以不设置为0
+							    </div>
+							</div>
+						</div>
+
+
+				       <!--  <div class="form-group">
 					        <label class="col-xs-12 col-sm-3 col-md-2 control-label">联系我们是否显示</label>
 					        <div class="col-sm-9 col-xs-12">
 						    <label class="radio-inline">
@@ -41,8 +96,8 @@
 							   <input type="radio" name="is_follow" value="0" {if $info['is_follow'] != 1} checked {/if}>不显示
 						    </label>
 					        </div>
-				        </div>
-				        <div class="form-group">
+				        </div> -->
+				       <!--  <div class="form-group">
 					        <label class="col-xs-12 col-sm-3 col-md-2 control-label">邀请好友模式</label>
 					        <div class="col-sm-9 col-xs-12">
 						    <label class="radio-inline">
@@ -55,9 +110,9 @@
 					        <div class="col-sm-9 col-xs-12">
 						    <span class="help-block" style="padding-left: 83px;color:red;">邀请好友步数加成模式：邀请好友送步数与步数加成。邀请好友送币数模式：邀请新用户开礼包，送步数币。如果选择送币模式，请到左侧菜单“邀请送币营销功能”添加步数币礼包</span>
 					        </div>
-				        </div>
+				        </div> -->
 				        
-						<div class="form-group">
+						<!-- <div class="form-group">
 							<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">步数币余额长条背景图</label>
 							<div class="col-sm-8">
 								{php echo tpl_form_field_image('longbg',$info['longbg']);}
@@ -88,14 +143,9 @@
 								<div style="color: red !important;">建议尺寸：500*800
 							    </div>
 							</div>
-						</div>
-				        <div class="form-group">
-							<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">小程序分享标题</label>
-							<div class="col-sm-8">
-								<input type="text" name="sharetitle" class="form-control" value="{$info['sharetitle']}">
-							</div>
-						</div>
-						<div class="form-group">
+						</div> -->
+				        
+						<!-- <div class="form-group">
 							<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">首页“邀请好友得步数”按钮文字</label>
 							<div class="col-sm-4">
 								<input type="text" name="sharetext" class="form-control" value="{$info['sharetext']}">
@@ -124,14 +174,7 @@
 								<div style="color: red !important;">例：邀请好友永久加成</div>
 							</div>
 						</div>						
-						<div class="form-group">
-							<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">小程序分享图片</label>
-							<div class="col-sm-8">
-								{php echo tpl_form_field_image('sharepic',$info['sharepic']);}
-								<div style="color: red !important;">建议尺寸：600*600
-							    </div>
-							</div>
-						</div>
+						
 						<div class="form-group">
 							<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">授权登录图片</label>
 							<div class="col-sm-8">
@@ -321,7 +364,7 @@
 			                    <span class="help-block"></span>
 			                </div>
                         </div>                      
-					</div>
+					</div> -->
 			</div>
 		</div>
 		<div class="form-group col-sm-12">
