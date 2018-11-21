@@ -156,10 +156,12 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
     //启动图------接口
     public function doPageGetloading(){
 
-        global $_GPC, $_W;      
+        global $_GPC, $_W; 
+        $set = pdo_get('hcstep_set',array('id'=>19));
         $list = pdo_getall('hcstep_adv', array('enabled' => 1,'type'=>0), array(),'','displayorder asc');
         foreach ($list as $k => $v) {
             $list[$k]['thumb'] = $_W['attachurl'].$v['thumb'];
+            $list[$k]['advname'] = $set["xcx"];
         }
         return $this->result(1, '启动页图片',$list[0]);
     }
@@ -168,7 +170,9 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
 
     //首页轮播图，小程序二维码以及游戏规则接口
     public function doPageGetindex(){
-        global $_GPC, $_W;      
+        global $_GPC, $_W;   
+
+        $set = pdo_get('hcstep_set',array('id'=>19));   
         $list = pdo_getall('hcstep_adv', array('enabled' => 1,'type'=>array('0', '1', '2'),'uniacid'=>$_GPC['i']), array(),'','displayorder asc');
         
         $lodingDao;
@@ -185,7 +189,7 @@ class Hc_stepModuleWxapp extends WeModuleWxapp {
             }
         }
 
-        $resultData["title"]=$lodingDao["advname"];//标题
+        $resultData["title"]=$set["xcx"];//标题
         $resultData["loading_url"]=$lodingDao["thumb"];//启动图片
         $resultData["banner_url"]=$homeBannerDao["thumb"];//首页banner图
         $resultData["qrcode_url"]=$erweimaDao["thumb"];//小程序二维码图

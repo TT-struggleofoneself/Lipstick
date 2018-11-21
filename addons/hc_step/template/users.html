@@ -84,9 +84,9 @@
 						<td>{$item['nick_name']}</td>
 						<td>{$item['money']}</td>
 						<td>
-						<a class="btn btn-primary btn-sm" href="{php echo $this->createWebUrl('bushulog', array('user_id' => $item['user_id']))}">步数记录</a>
-						<a class="btn btn-primary btn-sm" href="{php echo $this->createWebUrl('invitelog', array('user_id' => $item['user_id']))}">邀请记录</a>
-						<a class="btn btn-primary btn-sm" href="{php echo $this->createWebUrl('tiaozhanlog', array('user_id' => $item['user_id']))}">挑战记录</a>
+						<a class="btn btn-primary btn-sm" href="{php echo $this->createWebUrl('recharge_exchange', array('user_id' => $item['user_id']))}">充值记录</a>
+						<a class="btn btn-primary btn-sm" href="{php echo $this->createWebUrl('game_exchange', array('user_id' => $item['user_id']))}">游戏记录</a>
+						<a class="btn btn-primary btn-sm" href="{php echo $this->createWebUrl('exchange', array('user_id' => $item['user_id']))}">订单(兑换)记录</a>
 						<a class="btn btn-danger btn-sm" onclick="return confirm('确认拉黑吗？');return false;" href="{php echo $this->createWebUrl('users', array('op' => 'black', 'id' => $item['user_id']))}">拉黑</a>
 						<a class="btn btn-danger btn-sm" onclick="return confirm('确认删除吗？');return false;" href="{php echo $this->createWebUrl('users', array('op' => 'del', 'id' => $item['user_id']))}">删除</a>
 						</td>

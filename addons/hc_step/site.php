@@ -388,6 +388,89 @@ class Hc_stepModuleSite extends WeModuleSite {
         include $this->template('blacklist');      
     }
 
+    
+
+
+
+    //充值面额设置
+    public function doWebRechange(){
+
+        global $_W,$_GPC;
+        $list = pdo_getall('hcstep_rechange',array(), array(),'','id desc');
+        include $this->template('rechange');
+    }
+
+
+
+    //添加充值面值
+    public function doWebAddRechange() {
+        global $_W,$_GPC;
+        $id = $_GPC['id'];
+
+        if($_GPC['act']=='add'){
+            $data['uniacid'] = $_W['uniacid'];
+            $data['price'] = $_GPC['price'];
+            $data['addtime'] = date('y-m-d h:i:s',time());
+            $data['state'] = 1;
+            $result = pdo_insert('hcstep_rechange', $data);
+            
+            if (!empty($result)) {
+                message('操作成功',$this->createWebUrl('rechange'));
+            }
+        }
+        //上架
+        if($_GPC['act']=='up'){
+            $data['state'] = 1;
+            $result = pdo_update('hcstep_rechange', $data, array('id'=>$_GPC['id']));
+            if (!empty($result)) {
+                message('操作成功',$this->createWebUrl('rechange'));
+            }
+        }
+        //下架
+        if($_GPC['act']=='down'){
+            $data['state'] =0;
+            $result = pdo_update('hcstep_rechange', $data, array('id'=>$_GPC['id']));
+            if (!empty($result)) {
+                message('操作成功',$this->createWebUrl('rechange'));
+            }
+        }
+
+
+
+        if($_GPC['act']=='edit'){
+            $data['uniacid'] = $_W['uniacid'];
+            $data['price'] = $_GPC['price'];
+            $data['addtime'] = date('y-m-d h:i:s',time());
+            $data['state'] = 1;
+
+            $result = pdo_update('hcstep_rechange', $data, array('id'=>$_GPC['id']));
+            if (!empty($result)) {
+                message('操作成功',$this->createWebUrl('rechange'));
+            }
+        }
+
+        if($_GPC['act']=='del'){
+            $result = pdo_delete('hcstep_rechange', array('id'=>$_GPC['id']));
+            if (!empty($result)) {
+                message('操作成功',$this->createWebUrl('rechange'));
+            }
+        }
+        if($_GPC['act']=='display'){
+            $result = pdo_update('hcstep_rechange',array(),array());
+            if (!empty($result)) {
+                message('操作成功',$this->createWebUrl('rechange'));
+            }
+        }
+
+        $info = pdo_get('hcstep_rechange',array('id'=>$id));
+        include $this->template('addrechange');
+    }
+
+
+
+
+
+
     //基础设置
     public function doWebSetting(){
 
@@ -732,9 +815,14 @@ class Hc_stepModuleSite extends WeModuleSite {
         if(!empty($_GPC['keyword']) and $_GPC['order_status'] ==3){
             $where['telNumber'] = $keyword;
         }
+        $user_id = $_GPC['user_id'];  
+        if(!empty($user_id)){
+            $where['user_id'] = $user_id;
+        }
         $where['uniacid'] = $_W['uniacid'];
-        $where['status !='] = 2;
-        $where['type <'] = 10;
+        // $where['status !='] = 2;
+        // $where['type <'] = 10;
+         $where['type'] = 0;
         
         $pageindex = max(1, intval($_GPC['page']));
         $pagesize = 10;
@@ -750,11 +838,94 @@ class Hc_stepModuleSite extends WeModuleSite {
            $list[$k]['head_pic'] = $user['head_pic'];
            $list[$k]['nick_name'] = $user['nick_name'];
            $list[$k]['goods_name'] = $goods['goods_name'];
-           $list[$k]['time'] = date('Y-m-d H:i:s',$v['time']);
+           $list[$k]['time'] = $v['time'];
         }        
 
         include $this->template('exchange');
     }
+
+
+    //充值记录
+    public function doWebRecharge_exchange(){
+        global $_W,$_GPC;
+        
+        $keyword = $_GPC['keyword'];        
+        if(!empty($_GPC['keyword']) and $_GPC['order_status'] ==1){
+            $where['user_id LIKE'] = '%'.$keyword.'%';
+        }
+        if(!empty($_GPC['keyword']) and $_GPC['order_status'] ==2){
+            $where['userName'] = $keyword;
+        }
+        if(!empty($_GPC['keyword']) and $_GPC['order_status'] ==3){
+            $where['telNumber'] = $keyword;
+        }
+        $user_id = $_GPC['user_id'];  
+        if(!empty($user_id)){
+            $where['user_id'] = $user_id;
+        }
+        $where['uniacid'] = $_W['uniacid'];
+        // $where['status !='] = 2;
+        // $where['type <'] = 10;
+        $where['type'] = 2;
+        
+        $pageindex = max(1, intval($_GPC['page']));
+        $pagesize = 10;
+
+        $list = pdo_getslice('hcstep_orders',$where,array($pageindex, $pagesize),$total,array(),'','id desc');
+        $page = pagination($total, $pageindex, $pagesize);
+
+        //$list = pdo_getall('hcstep_orders',array('uniacid'=>$_W['uniacid']), array(),'','id desc');
+        
+        foreach ($list as $k => $v) {
+           $user = pdo_get('hcstep_users',array('uniacid'=>$_W['uniacid'],'user_id'=>$v['user_id']));
+           $goods = pdo_get('hcstep_goods',array('id'=>$v['goods_id'],'uniacid'=>$_W['uniacid']));
+           $list[$k]['head_pic'] = $user['head_pic'];
+           $list[$k]['nick_name'] = $user['nick_name'];
+           $list[$k]['goods_name'] = $goods['goods_name'];
+           $list[$k]['time'] = $v['time'];
+        }        
+
+        include $this->template('recharge_exchange');
+    }
+
+
+
+    //玩游戏记录
+    public function doWebGame_exchange(){
+        global $_W,$_GPC;
+        
+        $keyword = $_GPC['keyword'];        
+        if(!empty($_GPC['keyword']) and $_GPC['order_status'] ==1){
+            $where['user_id LIKE'] = '%'.$keyword.'%';
+        }
+        if(!empty($_GPC['game_level']) and $_GPC['order_status'] ==2){
+            $where['game_level'] = $keyword;
+        }
+        $user_id = $_GPC['user_id'];  
+        if(!empty($user_id)){
+            $where['user_id'] = $user_id;
+        }
+
+        $where['type'] = 1;//1  玩游戏  
+        $pageindex = max(1, intval($_GPC['page']));
+        $pagesize = 10;
+
+        $list = pdo_getslice('hcstep_moneylog',$where,array($pageindex, $pagesize),$total,array(),'','id desc');
+        $page = pagination($total, $pageindex, $pagesize);
+        //$list = pdo_getall('hcstep_orders',array('uniacid'=>$_W['uniacid']), array(),'','id desc');
+        
+        foreach ($list as $k => $v) {
+           $user = pdo_get('hcstep_users',array('uniacid'=>$_W['uniacid'],'user_id'=>$v['user_id']));
+           $goods = pdo_get('hcstep_goods',array('id'=>$v['goods_id'],'uniacid'=>$_W['uniacid']));
+           $list[$k]['head_pic'] = $user['head_pic'];
+           $list[$k]['nick_name'] = $user['nick_name'];
+           $list[$k]['goods_name'] = $goods['goods_name'];
+           $list[$k]['time'] =$v['add_time'];
+        }   
+        include $this->template('game_exchange');
+    }
+
+
 
     //奖品兑换记录
     public function doWebWin_exchange() {
@@ -971,53 +1142,129 @@ class Hc_stepModuleSite extends WeModuleSite {
         include $this->template('hongbaolog');
     }
 
+
+
     //发货
     public function doWebFahuo() {
         global $_W,$_GPC;
-        $id = $_GPC['id'];      
-        if($_GPC['op'] == 'shangpin'){
-            $info = pdo_get('hcstep_orders',array('id'=>$id));
-            $type = 'shangpin';
-        }
-        if($_GPC['act'] == 'shangpin'){
-            $info = pdo_get('hcstep_orders',array('id'=>$id));
-            $data['status'] = 1;
-            $data['express'] = $_GPC['express'];
-            $data['expressname'] = $_GPC['expressname'];
-            $data['fahuotime'] = time();
-            $res = pdo_update('hcstep_orders',$data, array('id' => $_GPC['id']));
-            //模板消息
-            $formid=pdo_getall('hcstep_formid', array('user_id' => $info['user_id'],'status'=>0), array() , '',array('id DESC') , array());
-            if(!empty($formid[0])){
-                $formid[0]['orderid'] = $info['id'];
-                $aa=$this->fahuotpl($formid[0]);
+        $id = $_GPC['id']; 
+        $user_id = $_GPC['user_id']; 
+        $goods_id = $_GPC['goods_id']; 
+        // if($_GPC['op'] == 'shangpin'){
+        //     $info = pdo_get('hcstep_orders',array('id'=>$id));
+        //     $type = 'shangpin';
+        // }
+        // if($_GPC['act'] == 'shangpin'){
+        //     $info = pdo_get('hcstep_orders',array('id'=>$id));
+        //     $data['status'] = 2;
+        //     $data['express'] = $_GPC['express'];
+        //     $data['expressname'] = $_GPC['expressname'];
+        //     $data['fahuotime'] = time();
+        //     $res = pdo_update('hcstep_orders',$data, array('id' => $_GPC['id']));
+        //     //模板消息
+        //     $formid=pdo_getall('hcstep_formid', array('user_id' => $info['user_id'],'status'=>0), array() , '',array('id DESC') , array());
+        //     if(!empty($formid[0])){
+        //         $formid[0]['orderid'] = $info['id'];
+        //         $aa=$this->fahuotpl($formid[0]);
+        //     }
+
+        //     if($res){
+        //         message('发货成功',$this->createWebUrl('exchange'),'success');
+        //     }else{
+        //         message('已发货',$this->createWebUrl('exchange'),'error');
+        //     }
+        // }
+        if($_GPC['op'] == 'jiangpin'){
+            $info = pdo_get('hcstep_winlog',array('id'=>$id,'user_id'=>$user_id,'goods_id'=>$goods_id));
+            if(empty($info)){
+                $data['id'] = $id;
+                $data['user_id'] = $user_id;
+                $data['goods_id'] = $goods_id;
+                $data['status'] = 0;
+                $data['time'] = date('y-m-d h:i:s',time());
+                $res = pdo_insert('hcstep_winlog',$data);
+                $info=$data;
             }
 
-            if($res){
-                message('发货成功',$this->createWebUrl('exchange'),'success');
-            }else{
-                message('已发货',$this->createWebUrl('exchange'),'error');
-            }
-        }
-        if($_GPC['op'] == 'jiangpin'){
-            $info = pdo_get('hcstep_winlog',array('id'=>$id));
             $type = 'jiangpin';
         }
         if($_GPC['act'] == 'jiangpin'){
             $data['status'] = 1;
             $data['express'] = $_GPC['express'];
             $data['expressname'] = $_GPC['expressname'];
-            $data['fahuotime'] = time();
+            $data['time'] = date('y-m-d h:i:s',time());
+            $data['fahuotime'] = date('y-m-d h:i:s',time());
+
+             // var_dump($data);exit;
+             //如果是奖品的话，那么就insert
             $res = pdo_update('hcstep_winlog',$data, array('id' => $_GPC['id']));
             if($res){
-                message('发货成功',$this->createWebUrl('win_exchange'),'success');
+               $where['status']=2;
+               //修改订单表中的订单发货状态
+                pdo_update('hcstep_orders',$where,array('id' => $_GPC['id']));
+
+                message('发货成功',$this->createWebUrl('exchange'),'success');
             }else{
-                message('已发货',$this->createWebUrl('win_exchange'),'error');
+                message('已发货',$this->createWebUrl('exchange'),'error');
             }
         }
-    
-        include $this->template('fahuo');	
+        include $this->template('fahuo');   
     }
+
+
+
+
+
+
+
+
+    // //发货
+    // public function doWebFahuo() {
+    //     global $_W,$_GPC;
+    //     $id = $_GPC['id'];      
+    //     if($_GPC['op'] == 'shangpin'){
+    //         $info = pdo_get('hcstep_orders',array('id'=>$id));
+    //         $type = 'shangpin';
+    //     }
+    //     if($_GPC['act'] == 'shangpin'){
+    //         $info = pdo_get('hcstep_orders',array('id'=>$id));
+    //         $data['status'] = 2;
+    //         $data['express'] = $_GPC['express'];
+    //         $data['expressname'] = $_GPC['expressname'];
+    //         $data['fahuotime'] = time();
+    //         $res = pdo_update('hcstep_orders',$data, array('id' => $_GPC['id']));
+    //         //模板消息
+    //         $formid=pdo_getall('hcstep_formid', array('user_id' => $info['user_id'],'status'=>0), array() , '',array('id DESC') , array());
+    //         if(!empty($formid[0])){
+    //             $formid[0]['orderid'] = $info['id'];
+    //             $aa=$this->fahuotpl($formid[0]);
+    //         }
+
+    //         if($res){
+    //             message('发货成功',$this->createWebUrl('exchange'),'success');
+    //         }else{
+    //             message('已发货',$this->createWebUrl('exchange'),'error');
+    //         }
+    //     }
+    //     if($_GPC['op'] == 'jiangpin'){
+    //         $info = pdo_get('hcstep_winlog',array('id'=>$id));
+    //         $type = 'jiangpin';
+    //     }
+    //     if($_GPC['act'] == 'jiangpin'){
+    //         $data['status'] = 2;
+    //         $data['express'] = $_GPC['express'];
+    //         $data['expressname'] = $_GPC['expressname'];
+    //         $data['fahuotime'] = time();
+    //         $res = pdo_update('hcstep_winlog',$data, array('id' => $_GPC['id']));
+    //         if($res){
+    //             message('发货成功',$this->createWebUrl('win_exchange'),'success');
+    //         }else{
+    //             message('已发货',$this->createWebUrl('win_exchange'),'error');
+    //         }
+    //     }
+    
+    //     include $this->template('fahuo');	
+    // }
 
     public function doWebAdv() {
         global $_W,$_GPC;

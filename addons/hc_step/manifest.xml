@@ -25,7 +25,7 @@
 			<item type="wxapp" />
 		</supports>
 	</platform>
-
+  
 	<bindings>
 		<menu>
 			<entry title="基本设置" do="setting" state="" direct="false"/>
@@ -34,14 +34,16 @@
       <!--
 			<entry title="奖品管理" do="awards" state="" direct="false"/>
 			-->
-			<entry title="充值记录" do="exchange" state="" direct="false"/>
+      <entry title="充值面值设置" do="rechange" state="" direct="false"/>
+			<entry title="充值兑换记录" do="exchange" state="" direct="false"/>
 			<entry title="常见问题" do="question" state="" direct="false"/>
 			<entry title="广告位" do="adv" state="" direct="false"/>
       <!--
 			<entry title="步数挑战" do="activity" state="" direct="false"/>
       -->
-			<entry title="首页右侧栏图标" do="icon" state="" direct="false"/>
       <!--
+			<entry title="首页右侧栏图标" do="icon" state="" direct="false"/>
+      
 			<entry title="邀请送币营销功能" do="hongbao" state="" direct="false"/>
       -->
 			<entry title="客服消息" do="kefu" state="" direct="false"/>
