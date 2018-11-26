@@ -1,0 +1,256 @@
+
+{template 'common/header'}
+
+<style>
+	.dianj a{
+		width:100%;
+		height:40px;
+		display:block;
+		box-sizing:border-box;
+		padding:0 20px;
+		line-height:40px;
+		color:#878787;
+	}
+	.dianj a:hover{
+		background:#428bca;
+	}
+	.dianj a:hover span{
+		color:#fff;
+	}
+	.dianj a img{
+		width:25px;
+		height:25px;
+		float:left;
+		margin-top: 8px;
+		vertical-align: middle;
+	}
+	.dianj .one{
+		background:#428bca;
+	}
+	.dianj .one span{
+		color:#fff;
+
+	}
+	.dianj a span{
+		color:#878787;
+		font-size:16px;
+		float:left;
+		padding-left:17px;
+		line-height:40px;
+	}
+	.dengliua span{
+		font-size:16px;.
+	color:#fff;
+		line-height:60px;
+		color:#428bca;
+	}
+	.dengliua img{
+		width: 40px;
+		height: 40px;
+		margin: 0 auto;
+		margin-top: 10px;
+	}
+	.shiif{
+		width:100%;
+		box-sizing: border-box;
+		padding:30px 24px;
+	}
+	.preparation{
+		width:100%;
+		height:130px;
+		border:1px solid #d9edf7;
+		border-radius:5px;
+	}
+	.preparation_one{
+		line-height:40px;
+		padding-left:17px;
+		color:#428bca;
+		font-size:16px;
+		background:#d9edf7;
+	}
+	.shav{
+		width:35%;
+		margin:0 auto;
+		margin-top:25px;
+	}
+	.shav label{
+		color:#333333;
+		line-height:25px;
+		font-size:16px;
+		padding-left:20px;
+		float: left;
+		width:80%;
+	}
+	.shav select{
+		width:80%;
+		float:left;
+		border: 0;
+		border-radius:5px;
+		height:40px!important;
+		background: #eeeeee!important;
+		box-sizing: border-box;
+		box-shadow:0 2px 2px 2px #b1cfe9!important;
+		padding:12px;
+	}
+	.shav select option{
+		color:#333333;
+		font-size:16px;
+	}
+	.adsgf{
+		width:100%;
+		box-sizing: border-box;
+		margin:30px 0;
+		display:flex;
+		justify-content: space-between;
+	}
+	.qita{
+		/*padding-right:3%;*/
+		box-sizing: border-box;
+		margin-right:20px;
+		float: left;
+		width:25%;
+		display:flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.qita h4{
+		height:40px;
+		background: #eeeeee;
+		box-sizing: border-box;
+		box-shadow:0 2px 2px 2px #b1cfe9;
+		padding:12px;
+		margin:0 ;
+		float:left;
+		border: 0;
+		font-size:14px;
+		border-radius:5px;
+	}
+	.qita span{
+		float: left;
+		width:32px;
+		text-align:center;
+		width:9%;
+		line-height:40px;
+		display:block;
+		FONT-SIZE:20px;
+	}
+	.qita input{
+		border:1px solid #4877e6;
+		float:left;
+		width:30%;
+		height:40px;
+		text-align:center;
+		line-height:40px;
+	}
+	.tab{
+		width:100%;
+		border:0;
+		    border-collapse: collapse;
+
+		height:300px;
+	}
+	.tab tr{
+		padding:0;
+		margin:0;
+
+		border-collapse: collapse;
+
+	}
+	.tab td{
+		height:40px;
+		border:1px solid #eee;
+		text-align: center;
+		line-height:40px;
+		border-collapse: collapse;
+	}
+	.id{
+		width:110px;
+	}
+	.sacas p{
+		color:#333333;
+		font-size:16px;
+		float:left;
+		margin-right:30px;
+		line-height:40px;
+	}
+	.fang img{
+		width:20px;
+		height:20px;
+	}
+	.jxhsa input{
+		width:70%;
+		height:36px;
+		padding-left:22px;
+		border:1px solid #d2d2d2;
+	}
+	.sacas .cdaoij{
+		color:#ff0000;
+		font-size:12px;
+		width:350px;
+		line-height:20px;
+	}
+	.yvkadhj{
+		width:100%;
+		margin-top:45px;
+		text-align:center;
+	}
+	.yufdia{
+		display:inline-block;
+		width:40%;
+		text-align:center;
+	}
+</style>
+<div class="shiif">
+	<div class="preparation" >
+				<p class="preparation_one">参与记录</p>
+				<div class="clearfix shav" style="float:left;">
+					<label>日期：{$lastday}</label>                   
+				</div>
+				<div class="clearfix shav" style="float:left;">
+					<label>名称:{$step}步挑战赛</label>
+				</div>
+				<div class="col-md-3 mathyts" style="float:left;margin-top:20px;">
+                    <a href="{php echo $this->createWebUrl('sendmoney',array('id'=>$set['id']))}" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="发放奖励"><i class="fa fa-send"></i>发放奖励</a>
+                </div>
+			</div>
+			<div class="clearfix adsgf">
+				<div class="clearfix fl qita">
+					<h4>当天参与总人数</h4>
+					<span>:</span>
+					<input readonly="readonly" type="text" placeholder="{$zong}人" />
+				</div>
+				
+				<div class="clearfix fl qita">
+					<h4>挑战成功</h4>
+					<span>:</span>
+					<input readonly="readonly" type="text" placeholder="{$success}人" />
+				</div>
+				
+				<div class="clearfix fl qita">
+					<h4>挑战失败</h4>
+					<span>:</span>
+					<input readonly="readonly" type="text" placeholder="{$fail}人" />
+				</div>
+			</div>
+			<table border="0"  cellspacing="0" class="tab">
+				<tr>
+					<td class="id">ID</td>
+					<td>昵称</td>
+					<td>报名时间</td>
+					<td>是否达标</td>
+					<td>奖励</td>
+				</tr>
+				{loop $list $info}
+				<tr>
+					<td class="id">{$info['user_id']}</td>
+					<td>{$info['nick_name']}</td>
+					<td>{$info['time']}</td>
+					<td>{$info['status']}</td>
+					<td>{$info['jiangjin']}</td>
+				</tr>
+				{/loop}
+			</table>
+		</div>
+</body>
+</html>

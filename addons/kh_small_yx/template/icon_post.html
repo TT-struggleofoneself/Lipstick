@@ -1,0 +1,229 @@
+{template 'common/header'}
+<style>
+	.dag,.dagtwo,.dagthree,.dagfor{
+		display:none;
+	}
+</style>
+<ul class="nav nav-tabs">
+
+	<li><a href="{php echo $this->createWebUrl('icon')}">图标列表</a></li>
+
+	<li class="active"><a href="{php echo $this->createWebUrl('icon_post')}">添加图标</a></li>
+
+</ul>
+
+
+
+<div class="clearfix">
+
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" onsubmit="return formcheck()">
+		<input type="hidden" name="id" value="{$info['id']}">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				图标设置
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="displayorder" class="form-control" value="{$info['displayorder']}">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>图标标题</label>
+					<div class="col-sm-4 col-xs-12">
+						<input type="text" id="advname" name="advname" class="form-control" value="{$info['advname']}">
+					</div>
+					<div class="col-sm-6">
+			            {php echo tpl_form_field_color('advnamecolor', $value = $info['advnamecolor'])}
+			            <span class="help-block"></span>
+			        </div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">图标图片</label>
+					<div class="col-sm-9 col-xs-12">
+						 {php echo tpl_form_field_image('thumb',$info[thumb]);}
+						<span class="help-block">图标图片，建议100*100</span>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">图标功能</label>
+					<div class="col-sm-9 col-xs-12" id="qie">
+						<label class="radio-inline inlinetab" >
+							<input type="radio" name="jump" {if $info['jump'] == 0} checked {/if} value="0">运动提醒
+						</label>
+						<label class="radio-inline inlinetab" >
+							<input type="radio" name="jump" {if $info['jump'] == 1} checked {/if} value="1">汗水日记
+						</label>
+						<label class="radio-inline inlinetab" >
+							<input type="radio" name="jump" {if $info['jump'] == 2} checked {/if} value="2">跳转其他小程序
+						</label>
+						<label class="radio-inline inlinetab" >
+							<input type="radio" name="jump" {if $info['jump'] == 3} checked {/if} value="3">H5
+						</label>
+						<label class="radio-inline inlinetab" >
+							<input type="radio" name="jump" {if $info['jump'] == 4} checked {/if} value="4">客服消息
+						</label>
+					</div>
+					<div class="col-sm-9 col-xs-12">
+						<span class="help-block" style="padding-left: 83px;">如果选择跳转汗水日记，建议先在基本设置-》海报设置里，将汗水日记文字跟汗水日记小图标删掉保存。这样小程序首页右上角的汗水日记与按钮就不再显示，避免功能重复</span>
+					</div>
+				</div>
+
+				<div class="form-group one">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">小程序路径</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="xcxpath" class="form-control" value="{$info['xcxpath']}">
+					</div>
+				</div>
+				<div class="form-group two">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">小程序appid</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="xcxappid" class="form-control" value="{$info['xcxappid']}">
+					</div>
+				</div>
+				<div class="form-group three">
+					<label class="col-xs-12 col-sm-3 col-md-2 col-lg-2 control-label">运动提醒图</label>
+					<div class="col-sm-8">
+						{php echo tpl_form_field_image('runpic',$info['runpic']);}
+						<div style="color: red !important;">建议尺寸：800*960</div>
+					</div>
+				</div>
+				<div class="form-group four">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">H5链接</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="h5" class="form-control" value="{$info['h5']}">
+					</div>
+				</div>
+				<div class="form-group five">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">客服消息引导图</label>
+					<div class="col-sm-9 col-xs-12">
+						 {php echo tpl_form_field_image('tippic',$info[tippic]);}
+						<span class="help-block">图标图片，建议1080*1920</span>
+					</div>
+				</div>
+
+				<div class="form-group">
+
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">是否显示</label>
+
+					<div class="col-sm-9 col-xs-12">
+
+						<label class="radio-inline">
+
+							<input type="radio" name="enabled" {if $info['enabled'] == 1} checked {/if} value="1"> 是
+
+						</label>
+
+						<label class="radio-inline" >
+
+							<input type="radio" name="enabled" value="0" {if $info['enabled'] != 1} checked {/if}> 否
+
+						</label>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="form-group col-sm-12">
+
+			<input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1">
+
+			{if empty($info['id'])}
+
+				<input type="hidden" name="act" value="add">
+
+			{else}
+
+				<input type="hidden" name="act" value="edit">
+
+			{/if}
+
+		</div>
+
+	</form>
+<script type="text/javascript">
+	$('#qie').find('label').each(function(){			
+		$(this).click(function(){
+			var index=$(this).index()
+			if(index==0){
+				$('.one').hide()
+				$('.two').hide()
+				$('.three').show()
+				$('.four').hide()
+				$('.five').hide()
+			}else if(index==1){
+				$('.one').hide()
+				$('.two').hide()
+				$('.three').hide()
+				$('.four').hide()
+				$('.five').hide()
+			}
+			else if(index==2){
+				$('.one').show()
+				$('.two').show()
+				$('.three').hide()
+				$('.four').hide()
+				$('.five').hide()
+			}
+			else if(index==3){
+				$('.one').hide()
+				$('.two').hide()
+				$('.three').hide()
+				$('.four').show()
+				$('.five').hide()
+			}
+			else if(index==4){
+				$('.one').hide()
+				$('.two').hide()
+				$('.three').hide()
+				$('.four').hide()
+				$('.five').show()
+			}
+		})
+	})
+	var index = $('#qie label').find(':radio:checked').val();
+	        if(index==0){
+				$('.one').hide()
+				$('.two').hide()
+				$('.three').show()
+				$('.four').hide()
+				$('.five').hide()
+			}else if(index==1){
+				$('.one').hide()
+				$('.two').hide()
+				$('.three').hide()
+				$('.four').hide()
+				$('.five').hide()
+			}
+			else if(index==2){
+				$('.one').show()
+				$('.two').show()
+				$('.three').hide()
+				$('.four').hide()
+				$('.five').hide()
+			}
+			else if(index==3){
+				$('.one').hide()
+				$('.two').hide()
+				$('.three').hide()
+				$('.four').show()
+				$('.five').hide()
+			}
+			else if(index==4){
+				$('.one').hide()
+				$('.two').hide()
+				$('.three').hide()
+				$('.four').hide()
+				$('.five').show()
+			}
+</script>
+
+</div>
+
+{template 'common/footer'}

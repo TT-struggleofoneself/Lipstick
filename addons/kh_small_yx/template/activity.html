@@ -1,0 +1,78 @@
+{template 'common/header'}
+
+
+
+<div class="clearfix">				
+
+<ul class="nav nav-tabs">
+
+	<li class="active"><a href="{php echo $this->createWebUrl('activity')}">活动</a></li>
+
+	<li><a href="{php echo $this->createWebUrl('activity_post')}">添加活动</a></li>
+
+	<li><a href="{php echo $this->createWebUrl('activityset')}">基础设置</a></li>
+
+
+</ul>
+
+<div class="main panel panel-default">
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+					<th style="width:15%;">id</th>
+					<th style="width:10%;">排序</th>					
+					<th style="width:20%;">步数</th>
+					<th style="width:10%;">报名费</th>
+					<!-- <th style="width:10%;">开始时间</th>
+					<th style="width:10%;">结束时间</th> -->
+					<th class="text-right" style="width:15%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $index $item}
+					<tr>
+						<td>{$item['id']}</td>
+						<td><input type="text" class="form-control displayorder" data-id="{$item['id']}" name="displayorder" value="{$item['displayorder']}"></td>
+						<td>{$item['step']}</td>
+						<td>{$item['entryfee']}</td>
+						<!-- <td>{$item['starttime']}</td>
+						<td>{$item['endtime']}</td> -->
+						<td class="text-right">
+						    <a href="{php echo $this->createWebUrl('activitylog',array('id'=>$item['id']))}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="活动记录">记录</a>
+							<a href="{php echo $this->createWebUrl('activity_post',array('id'=>$item['id']))}" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="修改"><i class="fa fa-edit"></i></a>
+							<a href="{php echo $this->createWebUrl('activity_post',array('act'=>'del','id'=>$item['id']))}" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="删除"><i class="fa fa-times"></i></a>
+						</td>
+					</tr>
+				{/loop}
+				{if empty($list) }
+                <tr ng-if="!wechats">
+                <td colspan="9" class="text-center">暂无数据</td>
+                </tr>
+                {/if}
+				<tr>
+					<td colspan="7" style="text-align:right">{$page}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+$(".displayorder").bind('input propertychange',function(){
+	$.ajax({
+	    url:"{php echo $this->createWebUrl('activity_post',array('act'=>'display'))}",
+	    type:'POST',
+	    async:true,
+	    data:{
+	        displayorder:$(this).val(),id:$(this).attr('data-id')
+	    },
+	    timeout:5000,
+	    dataType:'json',
+	    success:function(data){
+	        //alert(data.message);
+	    }
+	})
+})
+</script>
+</div>
+{template 'common/footer'}
