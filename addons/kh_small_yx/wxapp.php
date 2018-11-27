@@ -724,6 +724,358 @@ class kh_small_yxModuleWxapp extends WeModuleWxapp {
 
 
 
+    //---------------------------------生成老婆接口开始----------------------------------------------------
+
+    //随机生成人物(老婆)属性------接口
+    public function  doPageWife(){
+         
+        //发型
+        $hairstyleArr=array(
+                            "单马尾",
+                            "双马尾",
+                            "麻花辫",
+                            "包子头",
+                            "公主辫",
+                            "长直",
+                            "姬发式",
+                            "短发",
+                            "中长发",
+                            "长发",
+                            "卷发",
+                            "波波头",
+                            "双钻头(螺旋双马尾)",
+                            "低马尾",
+                            "长双马尾"
+                            );
+        //CUP
+        $cupsize_arr=array(
+                            "AA",
+                            "A","A","A","A","A",
+                            "B","B","B","B","B","B","B","B","B","B","B",
+                            "C","C","C","C",
+                            "D","D","D",
+                            "E","E",
+                            "F",
+                            "G"
+                            );
+        //肤色
+        $skin_arr=array(
+                            "洁白",
+                            "正常",
+                            "正常",
+                            "正常",
+                            "正常",
+                            "正常",
+                            "正常",
+                            "正常",
+                            "正常",
+                            "黑妹"
+                            );
+        //属性
+        $attribute_arr = array(
+                            "青梅竹马",
+                            "天降系",
+                            "妹妹",
+                            "姐姐",
+                            "人妻",
+                            "学生",
+                            "学生会长",
+                            "老师",
+                            "不良",
+                            "碧池",
+                            "破鞋",
+                            "优等生",
+                            "大小姐",
+                            "眼镜娘",
+                            "贵族",
+                            "不幸少女",
+                            "吸血鬼",
+                            "公主",
+                            "圣女",
+                            "修女",
+                            "偶像",
+                            "猫娘",
+                            "宅女",
+                            "文学少女",
+                            "巫女",
+                            "魔法少女",
+                            "人造人",
+                            "杀手",
+                            "杀人狂",
+                            "科学家",
+                            "伪娘",
+                            "警察"
+                            );
+        //性格
+        $character_arr=array(
+                            "运动达人",
+                            "天才",
+                            "高傲",
+                            "傲娇",
+                            "元气",
+                            "强气",
+                            "弱气",
+                            "乐观",
+                            "悲观",
+                            "腹黑",
+                            "病娇",
+                            "冒失",
+                            "认真",
+                            "天然呆",
+                            "三无",
+                            "抖S",
+                            "抖M",
+                            "中二",
+                            "电波",
+                            "大和抚子",
+                            "病弱",
+                            "高岭之花",
+                            "笨蛋",
+                            "工口",
+                            "毒舌",
+                            "女王",
+                            "拜金",
+                            "温柔",
+                            "百合妹"
+                            );
+        //发色
+        $hair_color=$this->randomColor();
+
+        //瞳色
+        $pupil_color=$this->randomColor();
+
+        //身高
+        $height=$this->normalDistribution(165,5);
+
+        //体重
+        $bmi = $this->normalDistribution(20,1);
+        $weight=round($bmi*($height/100)*($height/100));
+
+
+        $resultData["hairstyle"]=$this->random($hairstyleArr);//发型
+        $resultData["cupsize"]=$this->random($cupsize_arr);//CUP
+        $resultData["skin"]=$this->random($skin_arr);//肤色
+        $resultData["attribute"]=$this->random($attribute_arr);//属性
+        $resultData["character"]=$this->random($character_arr);//性格
+        $resultData["hair_color"]=$hair_color;//发色
+        $resultData["pupil_color"]=$pupil_color;//瞳色
+        $resultData["height"]=(int)$height;//身高
+        $resultData["weight"]=(int)$weight;//体重
+
+         return $this->result(1, '请求成功',$resultData);
+    }
+
+
+
+
+    //随机生成人物（老公）属性------接口
+    public function  doPageHusband(){
+         
+        //发型
+        $hairstyleArr=array(
+                            "狼奔",
+                            "顺毛",
+                            "短寸",
+                            "短寸",
+                            "短寸",
+                            "卷毛",
+                            "二八分",
+                            "脏辫",
+                            "蓬松卷毛",
+                            "碎发",
+                            "碎发",
+                            "自然卷",
+                            "标准洗剪吹",
+                            "反光光头",
+                            "已秃",
+                            "子弹头",
+                            "锅盖头",
+                            "杀马特",
+                            "地中海",
+                            "蘑菇头",
+                            "爆炸头"
+                            );
+        //肤色
+        $skin_arr=array(
+                        "洁白",
+                        "正常",
+                        "正常",
+                        "正常",
+                        "正常",
+                        "正常",
+                        "正常",
+                        "正常",
+                        "正常",
+                        "黝黑"
+                         );
+        //属性
+        $attribute_arr = array(
+                            "青梅竹马",
+                            "天降系",
+                            "哥哥",
+                            "物理课代表",
+                            "老师",
+                            "不良",
+                            "科学家",
+                            "侦探",
+                            "小说家",
+                            "模特",
+                            "钢琴家",
+                            "化学家",
+                            "女装大佬",
+                            "死宅",
+                            "穷得只剩钱",
+                            "霸道总裁",
+                            "程序员",
+                            "机器人",
+                            "体育委员",
+                            "演员",
+                            "网红",
+                            "医生",
+                            "皇帝",
+                            "设计师",
+                            "画家",
+                            "富二代",
+                            "CEO",
+                            "一介匹夫",
+                            "屌丝",
+                            "当兵的",
+                            "键盘侠",
+                            "领导",
+                            "逮虾户"
+                            );
+        //性格
+        $character_arr=array(
+                            "运动达人",
+                            "小狼狗",
+                            "小奶狗",
+                            "天才",
+                            "高傲",
+                            "腹黑",
+                            "阳光",
+                            "乐观",
+                            "斯文败类",
+                            "温柔",
+                            "可爱",
+                            "呆",
+                            "慢热",
+                            "高冷",
+                            "毒舌",
+                            "爱撒娇",
+                            "懒鬼"
+                            );
+
+        //超能力
+        $superpower_arr=array(
+                            "变拖拉机",
+                            "瞬间移动",
+                            "读心术",
+                            "变成小动物",
+                            "时间静止",
+                            "预知未来",
+                            "感知过去",
+                            "隐身",
+                            "隔空取物",
+                            "念力",
+                            "忍术",
+                            "变玫瑰",
+                            "飞天遁地",
+                            "变触手",
+                            "QWERDF"
+                            );
+        //腹肌
+        $fujinum_arr=array(
+                            "1块",
+                            "1块",
+                            "1块",
+                            "1块",
+                            "1块",
+                            "1块",
+                            "1块",
+                            "1块",
+                            "2块",
+                            "4块",
+                            "4块",
+                            "6块",
+                            "8块",
+                            "一圈",
+                            "一圈",
+                            "两圈",
+                            "三圈",
+                            "年轮",
+                            "不存在的"
+                            );
+
+        //发色
+        $hair_color=$this->randomColor();
+
+        //瞳色
+        $pupil_color=$this->randomColor();
+
+        //身高
+        $height=$this->normalDistribution(180,5);
+
+        //体重
+        $bmi = $this->normalDistribution(20,1);
+        $weight=round($bmi*($height/100)*($height/100));
+
+        //jj  size
+        $size = $this->normalDistribution(16, 5);
+
+
+        $resultData["attribute"]=$this->random($attribute_arr);//属性
+        $resultData["character"]=$this->random($character_arr);//性格
+        $resultData["hair_color"]=$hair_color;//发色
+        $resultData["height"]=(int)$height;//身高
+        $resultData["weight"]=(int)$weight;//体重
+        $resultData["hairstyle"]=$this->random($hairstyleArr);//发型
+        $resultData["skin"]=$this->random($skin_arr);//肤色
+        $resultData["pupil_color"]=$pupil_color;//瞳色
+        $resultData["fujinum"]=$this->random($fujinum_arr);//腹肌
+        $resultData["size"]=round($size);//SIZE
+        $resultData["superpower"]=$this->random($superpower_arr);//超能力
+
+        return $this->result(1, '请求成功',$resultData);
+    }
+
+
+
+    //速记增加5的倍数
+    function normalDistribution($u, $v) {
+        // Box-Muller
+        $PI=3.14159;
+        $x1 =  lcg_value();
+        $x2 =  lcg_value();
+
+        $nD = sqrt(-2*log($x1))*sin(2*$PI*$x2)*$v+$u;
+        return $nD;
+    }
+
+
+
+    //根据一个数组的长度返回这个数组的随机元素
+    private function  random($arr){
+         $random = rand(0, count($arr)-1);
+         return  $arr[$random];
+    } 
+
+
+    //随机生成颜色值
+    private function randomColor(){
+        $colors = array();
+        for($i = 0;$i<6;$i++){
+            $colors[] = dechex(rand(0,15));
+        }
+        return "#".implode('',$colors);
+    }
+
+
+
+
+
+    //---------------------------------生成老婆接口结束---------------------------------------------------
+
+
 
 
     //  //测试支付回调----接口
