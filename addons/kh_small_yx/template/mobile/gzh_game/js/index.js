@@ -87,31 +87,50 @@ function createHg(GAMEMODE){
             $("#app").addClass("blur")
             $("#gameSuccessBox").css("display","block")
             $("#gameSuccessBoxBtn").on("click",function(){
-                if (window.isH5) {
-                    window.history.go(-1);
-                }else{
+                // if (window.isH5) {
+                //     window.history.go(-1);
+                // }else{
 
-                    wx.miniProgram.getEnv(function (res) {
-                        if (res.miniprogram) {
-                            var info = {
-                                game_id: game_id,//参数一
-                                openid: openid,//参数二
-                                orderId:orderId,
-                                level: level,//参数二
-                                results: 2,//参数二
-                            };
-                            var json = JSON.stringify(info);
-                            wx.miniProgram.postMessage({ data: json });
-                        }
-                    });
-                    setTimeout(function(){
-                        // wx.miniProgram.navigateBack();
-                        wx.miniProgram.redirectTo({
-                            url: '../my/my?address='+0+'&orderId='+orderId
-                        });
-                    },1000)
 
-                }
+                console.log("游戏结束了2222222：");
+                console.log(user_id);
+                console.log(game_id);
+                console.log(openid);
+                console.log(level);
+                var myurl="https://jihua.xiaopangxiekeji.com/app/index.php?i=5&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=EndGame&&m=kh_small_yx&sign=6bcf77e88a59f7c2b48757e7148e6783&user_id="+user_id+"&goods_id="+goods_id+"&game_id="+game_id+"&openid="+openid+"&level="+level;
+                $.ajax({
+                    url: myurl,
+                    type: 'post',
+                    dataType: 'json',
+                    data: info,
+                    success: function (data) {
+                        //过关调用。
+                        console.log(data)
+                        //跳入地址填写页面。
+                    }
+                })
+
+                    // wx.miniProgram.getEnv(function (res) {
+                    //     if (res.miniprogram) {
+                    //         var info = {
+                    //             game_id: game_id,//参数一
+                    //             openid: openid,//参数二
+                    //             orderId:orderId,
+                    //             level: level,//参数二
+                    //             results: 2,//参数二
+                    //         };
+                    //         var json = JSON.stringify(info);
+                    //         wx.miniProgram.postMessage({ data: json });
+                    //     }
+                    // });
+                    // setTimeout(function(){
+                    //     // wx.miniProgram.navigateBack();
+                    //     wx.miniProgram.redirectTo({
+                    //         url: '../my/my?address='+0+'&orderId='+orderId
+                    //     });
+                    // },1000)
+
+                // }
             })
         }
     }
@@ -128,28 +147,48 @@ function createHg(GAMEMODE){
         var level=this.level;
         // console.log(111,this.level);
         $("#gameOverBoxBtn").on("click",function(){
-            if (window.isH5) {
-                window.history.go(-1);
-            }else{
+            alert(333333333333333333);
+            // if (window.isH5) {
+            //     window.history.go(-1);
+            // }else{
 
-                wx.miniProgram.getEnv(function (res) {
-                    if (res.miniprogram) {
-                        var info = {
-                            game_id: game_id,//参数一
-                            openid: openid,//参数二
-                            orderId:orderId,
-                            level: level,//参数二
-                            results: 1,//参数二
-                        };
-                        var json = JSON.stringify(info);
-                        wx.miniProgram.postMessage({ data: json });
+
+                 console.log("游戏结束了11111111：");
+                console.log(user_id);
+                console.log(game_id);
+                console.log(openid);
+                console.log(level);
+                var myurl="https://jihua.xiaopangxiekeji.com/app/index.php?i=5&t=0&v=1.0&from=wxapp&c=entry&a=wxapp&do=EndGame&&m=kh_small_yx&sign=6bcf77e88a59f7c2b48757e7148e6783&user_id="+user_id+"&goods_id="+goods_id+"&game_id="+game_id+"&openid="+openid+"&level="+level;
+                $.ajax({
+                    url: myurl,
+                    type: 'post',
+                    dataType: 'json',
+                    data: info,
+                    success: function (data) {
+                        //过关调用。
+                        console.log(data)
+                        //跳入地址填写页面。
                     }
-                });
-                setTimeout(function() {
-                    wx.miniProgram.navigateBack();
+                })
 
-                },1000)
-            }
+                // wx.miniProgram.getEnv(function (res) {
+                //     if (res.miniprogram) {
+                //         var info = {
+                //             game_id: game_id,//参数一
+                //             openid: openid,//参数二
+                //             orderId:orderId,
+                //             level: level,//参数二
+                //             results: 1,//参数二
+                //         };
+                //         var json = JSON.stringify(info);
+                //         wx.miniProgram.postMessage({ data: json });
+                //     }
+                // });
+                // setTimeout(function() {
+                //     wx.miniProgram.navigateBack();
+
+                // },1000)
+            // }
         })
     }
     //初始化游戏
