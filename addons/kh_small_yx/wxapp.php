@@ -359,6 +359,35 @@ class kh_small_yxModuleWxapp extends WeModuleWxapp {
     }
 
 
+
+    //正式游戏入口
+    public function  doPageGzhGame(){
+        global $_GPC, $_W; 
+
+        $goods_id=$_GPC['goods_id'];
+        $game_id=$_GPC['hykj'];
+        $openid=$_GPC['openid'];
+        $user_id=$_GPC['user_id'];
+        $uniacid=$_GPC['i'];
+
+        $user = pdo_get('kh_small_yx_users',array('user_id'=>$user_id,'open_id'=>$openid,'uniacid'=>$uniacid));
+        if($user){
+            $moneyLog = pdo_get('kh_small_yx_moneylog',array('user_id'=>$user_id,'goods_id'=>$goods_id,'game_id'=>$game_id,'type'=>1,'game_level'=>0));
+
+            if($moneyLog){
+                include $this->template("gzhgame");
+            }else{
+                echo "非法操作1";
+                 // return $this->result(0, '非法操作1'); 
+            }
+        }else{
+            echo "非法操作2";
+            // return $this->result(0, '非法操作2'); 
+        }
+    }
+
+
+
     //模拟试玩游戏接口
     public function  doPageGames(){
         global $_GPC, $_W; 

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 54.8px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title></title>
+    <link rel="stylesheet" href="../addons/kh_small_yx/template/mobile/dgame/css/game.css">
+    <script>
+        var url="../addons/kh_small_yx/template/mobile/dgame/"
+    </script>
+    <script type="text/javascript" src="../addons/kh_small_yx/template/mobile/dgame/js/bodymovin.js"></script>
+    <script type="text/javascript" src="../addons/kh_small_yx/template/mobile/dgame/js/jweixin-1.3.2.js"></script>
+    <script typet="text/javascript" src="../addons/kh_small_yx/template/mobile/dgame/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../addons/kh_small_yx/template/mobile/dgame/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../addons/kh_small_yx/template/mobile/dgame/js/JicemoonMobileTouch.js"></script>
+    <script type="text/javascript" src="../addons/kh_small_yx/template/mobile/dgame/js/HardestGame1.js"></script>
+    <script type="text/javascript" src="../addons/kh_small_yx/template/mobile/dgame/js/index1.js"></script>
+</head>
+<body>
+<audio id="back_music" preload="" src="../addons/kh_small_yx/template/mobile/dgame/sounds/bg_audio.mp3" loop="true"></audio>
+<audio id="split_audio" preload="" src="../addons/kh_small_yx/template/mobile/dgame/sounds/split_audio.mp3"></audio>
+<audio id="collision_audio" preload="" src="../addons/kh_small_yx/template/mobile/dgame/sounds/collision_audio.mp3"></audio>
+<audio id="Countdown_10s_audio" preload="" src="../addons/kh_small_yx/template/mobile/dgame/sounds/Countdown_10s_audio.mp3"></audio>
+<audio id="gameFail_audio" preload="" src="../addons/kh_small_yx/template/mobile/dgame/sounds/gameFail_audio.mp3"></audio>
+<audio id="gameSuccess_audio" preload="" src="../addons/kh_small_yx/template/mobile/dgame/sounds/gameSuccess_audio.mp3"></audio>
+<audio id="insert_audio" preload="" src="../addons/kh_small_yx/template/mobile/dgame/sounds/insert_audio.mp3"></audio>
+<audio id="success_audio" preload="" src="../addons/kh_small_yx/template/mobile/dgame/sounds/success_audio.mp3"></audio>
+
+<div class="levelSwitchBox" id="levelSwitchBox" >
+    <img id="levelSwitchBoxMain" class="levelSwitchBoxMain" src="../addons/kh_small_yx/template/mobile/dgame/img/level_1_mains.jpg">
+</div>
+<div class="PopupBox" id="gameOverBox" style="display: none;">
+    <!--<div id="gameOverClose" class="close"><img src="../addons/kh_small_yx/template/mobile/dgame/img/close_btn.jpg"></div>-->
+    <!--<div class="gameOverIcon"></div>-->
+    <div id="gameOverBoxTitle">闯关失败</div>
+    <div class="PopupBoxBtn" id="gameOverBoxBtn">重新闯关</div>
+</div>
+<div class="PopupBox" id="gameSuccessBox" style="display: none;">
+    <!--<div id="gameSuccessClose" class="close"><img src="../addons/kh_small_yx/template/mobile/dgame/img/close_btn.jpg"></div>-->
+    <div id="gameSuccessBoxText">体验结束</div>
+    <div class="PopupBoxBtn" id="gameSuccessBoxBtn">马上赢口红</div>
+</div>
+
+<div class="layoutRoot" id="app">
+    <div class="game" id="game" style="width: 411px; height: 731px;">
+        <div class="account">
+            <!--<img class="avatar" src="https://h5.lipstick.lemiao.xyz/play/trail/?h5=1&amp;unionid=orLqYwz20BqFmMvAjg97kcEykaTo">-->
+            <span></span>
+        </div>
+        <div class="bulletsNumBox"  style="display:none">
+            <img class="bulletsNum" id="bulletsNum1" src="../addons/kh_small_yx/template/mobile/dgame/img/6.png" style="display:none">
+            <!--<img class="bulletsNum" id="bulletsNum2" src="https://h5.lipstick.lemiao.xyz/play/trail/?h5=1&amp;unionid=orLqYwz20BqFmMvAjg97kcEykaTo" style="display: none;">-->
+        </div>
+        <canvas style="position: relative;z-index: 3" id="gameStage" width="411" height="731"></canvas>
+        <div id="bm" style="width: 100%; height: 100%;position: fixed;background-color: rgba(0,0,0,0);top: 5.3rem; transform: translate(-5%,-1%); z-index: 2">
+        </div>
+        <div class="tips">
+            <p id="currentLevel">当前关数: <span>1</span></p>
+            <p id="gameTip"></p>
+        </div>
+
+        <div class="levelbox" id="levelbox">
+            <div class="level"><img id="level_1" src="../addons/kh_small_yx/template/mobile/dgame/img/level_icon_1_active.png"></div>
+            <div class="level"><img id="level_2" src="../addons/kh_small_yx/template/mobile/dgame/img/level_icon_2.png"></div>
+            <div class="level"><img id="level_3" src="../addons/kh_small_yx/template/mobile/dgame/img/level_3.png"></div>
+        </div>
+        <div id="timebox">18</div>
+    </div>
+</div>
+<script type="text/javascript">
+    var loadedMusic = false;
+    var h5Host = "https://wopen.wunengkeji.com/";
+    document.body.addEventListener('touchmove', function (e) {
+        e.preventDefault(); //阻止默认的处理方式(阻止下拉滑动的效果)
+    }, {passive: false});
+    var baseUrl = function GetRequest() {
+        var url = location.search;  //获取url中"?"符后的字符串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            url = url.split("?")[1];
+            strs = url.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = (strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+
+    }
+    var jsonParamsAlias = baseUrl();
+    // var jsonParams = {
+    //     "game_id" : jsonParamsAlias.gid,
+    //     "game_pay" : jsonParamsAlias.pay,
+    //     "product_id" : jsonParamsAlias.pid,
+    //     "randomNum" : jsonParamsAlias.rand,
+    //     "forecast_result": jsonParamsAlias.res,
+    //     "user_id" : jsonParamsAlias.uid
+    // }
+    var jsonParams = {
+        "game_id" : "1",
+        "game_pay" : "132",
+        "product_id" : "465",
+        "randomNum" : "4541",
+        "forecast_result": "1321",
+        "user_id" : "132"
+    }
+    if (jsonParamsAlias.slient) {
+        $('audio').prop('muted', true);
+    }
+    if (jsonParamsAlias.h5 && jsonParamsAlias.h5 == "1") {
+        window.isH5 = true;
+    }
+
+
+    console.log(jsonParams)
+    var cookieDelTime = new Date(Math.floor(new Date(new Date().getTime()+150000)));
+    $.cookie('game_cookie', null);
+    $.cookie('game_cookie', JSON.stringify(jsonParams));
+    console.log($.cookie('game_cookie'));
+    var anim = bodymovin.loadAnimation({
+        wrapper: document.querySelector('#bm'),
+        animType: 'svg',
+        loop: false,
+        autoplay: false,
+        prerender: true,
+        path: '../addons/kh_small_yx/template/mobile/dgame/js/data.json'
+    });
+    function play(){
+        anim.goToAndStop(0, true)
+        anim.play()
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        function audioAutoPlay() {
+            var audio = document.getElementById('back_music');
+         /*    audio.play(); */
+            document.addEventListener("WeixinJSBridgeReady", function () {
+                audio.play();
+            }, false);
+        }
+        audioAutoPlay();
+    });
+
+    document.addEventListener('visibilitychange', function(e) {
+        function audioStop() {
+            var audio = document.getElementById('back_music');
+            document.hidden ? audio.pause() : audio.play();
+            document.addEventListener("WeixinJSBridgeReady", function () {
+                document.hidden ? audio.pause() : audio.play();
+            }, false);
+        }
+        audioStop();
+    });
+
+
+    /*document.getElementById("return").onclick=function(){wx.miniProgram.navigateTo({url: '/pages/index/main'})};*/
+</script>
+
+
+<script>;</script><script type="text/javascript" src="https://wxopen.yiszh.com/app/index.php?i=2&c=utility&a=visit&do=showjs&m=wn_ttrouges"></script></body></html>
