@@ -1071,6 +1071,23 @@ class kh_small_yxModuleWxapp extends WeModuleWxapp {
 
 
 
+    //随机获取老婆分享图片---接口
+    public function doPageWifeShareImg(){
+        global $_GPC, $_W; 
+        //老波分享图片集合
+        $shard_arr=array(
+                        "a1.jpg",
+                        "a2.jpg",
+                        "a3.jpg",
+                        "a4.jpg",
+                        "a5.jpg",
+                        "a6.jpg",
+                        "a7.jpg"
+                            );
+        $resultData["shardImgUrl"]=$_W['attachurl']."share/wife/".$this->random($shard_arr);//属性
+        return $this->result(1, '老波分享图片',$resultData);
+    }
+
 
 
     //---------------------------------生成老婆接口结束---------------------------------------------------
